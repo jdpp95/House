@@ -1,0 +1,108 @@
+body {
+    z-index: 0;
+}
+
+.b1 {
+    outline: black solid 1px;
+}
+
+.b2 {
+    outline: black solid 2px;
+}
+
+#house {
+    margin-top: 20px;
+    width: 270px;
+    z-index: 3;
+    /* height: 928px; */
+}
+
+#door {
+    background-image: url("assets/door.jpg");
+    background-size: 100% 100%;
+}
+
+.floor-slab {
+    height: 12px;
+    background-color: grey;
+}
+
+.floor {
+    height: 216px;
+}
+
+.window {
+    background-color: rgba(0, 125, 255, 0.2);
+}
+
+#window-1-casement {
+    height: 30px;
+}
+
+#window-1 {
+    height: 146px;
+    width: 100%;
+}
+
+.upper-window {
+    height: 132px;
+}
+
+#gas-grid {
+    background-image: url("assets/diag-grid.jpg");
+    background-size: contain;
+    position: absolute;
+    height: 12px;
+    width: 30%;
+    left: 37%;
+    bottom: 14px;
+}
+
+#plate-col {
+    background-image: url("assets/213_plate.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position-y: 25px;
+}
+
+.blue-block {
+    background-color: rgba(0, 0, 255, 0.5);
+}
+
+.layer {
+    position: fixed;
+    top: 0%;
+    height: 100%;
+    width: 100%;
+}
+
+#sky {
+    z-index: -5;
+}
+
+#clouds {
+    background-size: 100% 100%;
+    opacity: 100%;
+    z-index: -2;
+}
+
+#stars {
+    z-index: -3;
+}
+
+#ui-panel{
+    position: relative;
+    background-color: rgba(0, 0, 0, 50%);
+    z-index: 5;
+}
+
+h3, h5{
+    color: white;
+    text-align: center;
+}
+
+#fog{
+    background-color: white;
+    opacity: 10%;
+    z-index: 4;
+}
