@@ -4,12 +4,13 @@ class SunAngleCalculator {
 
     constructor() {}
 
-    getSunAngleFromTime(time, latitude, longitude, utc){
+    getSunAngleFromTime(time, location){
         const unixDate = Date.parse(time) / 1000;
-        return this.getSunAngleFromTimestamp(unixDate, latitude, longitude, utc);
+        return this.getSunAngleFromTimestamp(unixDate, location);
     }
 
-    getSunAngleFromTimestamp(timestamp, latitude, longitude, utc){
+    getSunAngleFromTimestamp(timestamp, location){
+        let {latitude, longitude, utc} = location;
         latitude *= this.TO_RADIANS;
 
         const date = new Date(timestamp * 1000);
@@ -319,10 +320,12 @@ function colorT(t, sunAngle, clouds, rainIntensity = 0) {
 
 function onTestClicked() {
     for(let i=0; i < 24; i++){
-        let date = new Date(2021, 0, 31, i);
+        const otherLocation = {latitude: 44.983, longitude: -67.284, utc: -5};
+        
+        let date = new Date(2021, 0, 13, i);
         sunAngleCalculator = new SunAngleCalculator();
-        let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), 43.031, -76.137, -5);
+        let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), otherLocation);
 
-        console.log(`//    { time: ${i}, temperature: t, sunAngle: ${sunAngle.toFixed(1)}}, clouds: c}, //`)
+        console.log(`//    { time: ${i}, temperature: t, sunAngle: ${sunAngle.toFixed(1)}}, clouds: c}, //`);
     }
 }
