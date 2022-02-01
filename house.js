@@ -321,11 +321,11 @@ function onTestClicked() {
 
     let hourlySunAngles = [];
     const otherLocation = { latitude: 44.983, longitude: -67.284, utc: -5 };
+    const sunAngleCalculator = new SunAngleCalculator();
 
     for (let i = 0; i < 24; i++) {
 
         let date = new Date(2021, 0, 13, i);
-        sunAngleCalculator = new SunAngleCalculator();
         let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), otherLocation);
         hourlySunAngles.push(sunAngle);
 
