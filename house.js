@@ -1,3 +1,50 @@
+class SunAngleCalculator {
+    TO_RADIANS = Math.PI / 180;
+    TO_DEGREES = 180 / Math.PI;
+
+    constructor() {}
+
+    getSunAngleFromTime(time, latitude, longitude, utc){
+        const unixDate = Date.parse(time) / 1000;
+        return this.getSunAngleFromTimestamp(unixDate, latitude, longitude, utc);
+    }
+
+    getSunAngleFromTimestamp(timestamp, latitude, longitude, utc){
+        latitude *= this.TO_RADIANS;
+
+        const date = new Date(timestamp * 1000);
+        let dayOfYear = this.getDayOfYear(date);
+
+        let declination = this.getDeclination(dayOfYear) * this.TO_RADIANS;
+        let localTime = date.getUTCHours() + utc * 1 + date.getUTCMinutes() / 60 + date.getUTCSeconds() * 3600;
+        let hourAngle = this.getHourAngle(longitude, dayOfYear, localTime, utc) * this.TO_RADIANS;
+
+        return Math.asin(Math.sin(declination) * Math.sin(latitude)
+            + Math.cos(declination) * Math.cos(latitude) * Math.cos(hourAngle)) * this.TO_DEGREES;
+    }
+
+    getDayOfYear(date) {
+        const start = new Date(date.getFullYear(), 0, 0);
+        const diff = date - start;
+        const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+        return day;
+    }
+
+    getDeclination(dayOfYear){
+        return -23.45 * Math.cos((2 * Math.PI / 365) * (dayOfYear + 10));
+    }
+
+    getHourAngle(longitude, dayOfYear, localTime, utc) {
+        let b = (2.0 * Math.PI / 365) * (dayOfYear - 81);
+        let equationOfTime = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
+        let localStandardTimeMeridian = 15 * utc;
+        let timeCorrection = 4 * (longitude - localStandardTimeMeridian) + equationOfTime;
+        let localSolarTime = localTime + timeCorrection / 60;
+
+        return 15 * (localSolarTime - 12);
+    }
+}
+
 window.onload = () => {
     let weatherData = JSON.parse(localStorage.getItem('weatherData'));
 
@@ -268,4 +315,14 @@ function colorT(t, sunAngle, clouds, rainIntensity = 0) {
     lum = Math.round(lum);
 
     return { hue, sat, lum };
+}
+
+function onTestClicked() {
+    for(let i=0; i < 24; i++){
+        let date = new Date(2021, 0, 31, i);
+        sunAngleCalculator = new SunAngleCalculator();
+        let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), 43.031, -76.137, -5);
+
+        console.log(`//    { time: ${i}, temperature: t, sunAngle: ${sunAngle.toFixed(1)}}, clouds: c}, //`)
+    }
 }
