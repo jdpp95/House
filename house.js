@@ -2,15 +2,15 @@ class SunAngleCalculator {
     TO_RADIANS = Math.PI / 180;
     TO_DEGREES = 180 / Math.PI;
 
-    constructor() {}
+    constructor() { }
 
-    getSunAngleFromTime(time, location){
+    getSunAngleFromTime(time, location) {
         const unixDate = Date.parse(time) / 1000;
         return this.getSunAngleFromTimestamp(unixDate, location);
     }
 
-    getSunAngleFromTimestamp(timestamp, location){
-        let {latitude, longitude, utc} = location;
+    getSunAngleFromTimestamp(timestamp, location) {
+        let { latitude, longitude, utc } = location;
         latitude *= this.TO_RADIANS;
 
         const date = new Date(timestamp * 1000);
@@ -31,7 +31,7 @@ class SunAngleCalculator {
         return day;
     }
 
-    getDeclination(dayOfYear){
+    getDeclination(dayOfYear) {
         return -23.45 * Math.cos((2 * Math.PI / 365) * (dayOfYear + 10));
     }
 
@@ -76,7 +76,7 @@ window.onload = () => {
     hasFogCheckbox.addEventListener('change', e => {
         let visibilityInputGroup = document.querySelector('#visibilityInputGroup');
 
-        if(e.target.checked) {
+        if (e.target.checked) {
             visibilityInputGroup.style.display = 'flex';
         } else {
             visibilityInputGroup.style.display = 'none';
@@ -166,23 +166,22 @@ function colorSky({ temperature, sunAngle, cloudiness, rainIntensity, hasFog, vi
     const MIN_GRAYSCALE = 40;
     const MAX_GRAYSCALE = 100;
 
-    if(rainIntensity > 1)
-    {
-        grayscale = transition(MIN_GRAYSCALE, MAX_GRAYSCALE, 1, 3, Math.pow(rainIntensity, 1/2));
+    if (rainIntensity > 1) {
+        grayscale = transition(MIN_GRAYSCALE, MAX_GRAYSCALE, 1, 3, Math.pow(rainIntensity, 1 / 2));
     } else {
         grayscale = MIN_GRAYSCALE;
     }
 
     //Set fog
-    if(!hasFog){
+    if (!hasFog) {
         visibility = 5000;
-    } else if (visibility == 0){
+    } else if (visibility == 0) {
         visibility = 1;
     }
 
     fog.style.opacity = `${129 - 15.3 * Math.log(visibility)}%`
     fog.style.filter = `brightness(${brightness})`;
-    
+
     sky.style.backgroundColor = hsl;
     clouds.style.filter = `hue-rotate(${hue}deg) brightness(${brightness}) grayscale(${grayscale}%)`;
 }
@@ -319,13 +318,19 @@ function colorT(t, sunAngle, clouds, rainIntensity = 0) {
 }
 
 function onTestClicked() {
-    for(let i=0; i < 24; i++){
-        const otherLocation = {latitude: 44.983, longitude: -67.284, utc: -5};
-        
+
+    let hourlySunAngles = [];
+    const otherLocation = { latitude: 44.983, longitude: -67.284, utc: -5 };
+
+    for (let i = 0; i < 24; i++) {
+
         let date = new Date(2021, 0, 13, i);
         sunAngleCalculator = new SunAngleCalculator();
         let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), otherLocation);
+        hourlySunAngles.push(sunAngle);
 
-        console.log(`//    { time: ${i}, temperature: t, sunAngle: ${sunAngle.toFixed(1)}}, clouds: c}, //`);
+        // console.log(`//    { time: ${i}, temperature: t, sunAngle: ${sunAngle.toFixed(1)}}, clouds: c}, //`);
     }
+
+    console.log(hourlySunAngles.map(a => a.toFixed(1)));
 }
