@@ -408,7 +408,7 @@ function getOtherTime() {
         let hour = Math.floor(localTime);
         let minutes = (localTime - hour) * 60;
 
-        minutes = minutes.toFixed(0);
+        minutes = Math.floor(minutes);
 
         if(minutes < 10) {
             minutes += '0' + minutes;
