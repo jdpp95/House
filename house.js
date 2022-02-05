@@ -4,6 +4,22 @@ class SunAngleCalculator {
 
     constructor() { }
 
+    getTimeFromSunAngle(sunAngle, location, date) {
+        let { latitude, longitude, utc } = location;
+
+        let dayOfYear = this.getDayOfYear(date);
+        let declination = this.getDeclination(dayOfYear);
+        let hourAngle = this.getHourAngleFromSunAngle(sunAngle, declination, latitude);
+        let localStandardTimeMeridian = this.getLocalStandardTimeMeridian(utc);
+        let equationOfTime = this.getEquationOfTime(dayOfYear);
+
+        let timeCorrection = this.getTimeCorrection(longitude, localStandardTimeMeridian, equationOfTime);
+
+        let localTime = 12 - timeCorrection / 60;
+
+        return [localTime - hourAngle / 15, localTime + hourAngle / 15];
+    }
+
     getSunAngleFromTime(time, location) {
         const unixDate = Date.parse(time) / 1000;
         return this.getSunAngleFromTimestamp(unixDate, location);
@@ -18,7 +34,7 @@ class SunAngleCalculator {
 
         let declination = this.getDeclination(dayOfYear) * this.TO_RADIANS;
         let localTime = date.getUTCHours() + utc * 1 + date.getUTCMinutes() / 60 + date.getUTCSeconds() * 3600;
-        let hourAngle = this.getHourAngle(longitude, dayOfYear, localTime, utc) * this.TO_RADIANS;
+        let hourAngle = this.getHourAngleFromLocalTime(longitude, dayOfYear, localTime, utc) * this.TO_RADIANS;
 
         return Math.asin(Math.sin(declination) * Math.sin(latitude)
             + Math.cos(declination) * Math.cos(latitude) * Math.cos(hourAngle)) * this.TO_DEGREES;
@@ -35,16 +51,40 @@ class SunAngleCalculator {
         return -23.45 * Math.cos((2 * Math.PI / 365) * (dayOfYear + 10));
     }
 
-    getHourAngle(longitude, dayOfYear, localTime, utc) {
-        let b = (2.0 * Math.PI / 365) * (dayOfYear - 81);
-        let equationOfTime = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
-        let localStandardTimeMeridian = 15 * utc;
-        let timeCorrection = 4 * (longitude - localStandardTimeMeridian) + equationOfTime;
+    getHourAngleFromLocalTime(longitude, dayOfYear, localTime, utc) {
+        let equationOfTime = this.getEquationOfTime(dayOfYear);
+        let localStandardTimeMeridian = this.getLocalStandardTimeMeridian(utc);
+        let timeCorrection = this.getTimeCorrection(longitude, localStandardTimeMeridian, equationOfTime);
         let localSolarTime = localTime + timeCorrection / 60;
 
         return 15 * (localSolarTime - 12);
     }
+
+    getHourAngleFromSunAngle(sunAngle, declination, latitude) {
+        sunAngle *= this.TO_RADIANS;
+        declination *= this.TO_RADIANS;
+        latitude *= this.TO_RADIANS;
+
+        return Math.acos((Math.sin(sunAngle) - Math.sin(declination) * Math.sin(latitude)) / (Math.cos(declination) * Math.cos(latitude)));
+    }
+
+    getTimeCorrection(longitude, localStandardTimeMeridian, equationOfTime) {
+        return 4 * (longitude - localStandardTimeMeridian) + equationOfTime;
+    }
+
+    getEquationOfTime(dayOfYear) {
+        let b = (2.0 * Math.PI / 365) * (dayOfYear - 81);
+        return 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
+    }
+
+    getLocalStandardTimeMeridian(utc) {
+        return utc * 15;
+    }
 }
+
+const otherLocation = { latitude: 48.486, longitude: -58.402, utc: -4 };
+const sunAngleCalculator = new SunAngleCalculator();
+const otherDate = new Date(1959, 2, 4);
 
 window.onload = () => {
     let weatherData = JSON.parse(localStorage.getItem('weatherData'));
@@ -84,6 +124,19 @@ window.onload = () => {
     })
 
     onUpdateClicked();
+
+    getCurrentLocation((position) => {
+        localStorage.setItem('coords', `${position.coords.latitude},${position.coords.longitude}`);
+    });
+
+    updateTime();
+}
+
+function updateTime() {
+    setTimeout(() => {
+        getOtherTime();
+        updateTime();
+    }, 1000);
 }
 
 function onUpdateClicked() {
@@ -230,7 +283,6 @@ function getClosestPercentage(cloudiness) {
     let closestPercentage = 0;
     let smallestDiff = 100;
     for (let percentage of percentages) {
-        // console.log(Math.abs(percentage - cloudiness*100));
         if (Math.abs(percentage - cloudiness * 100) < smallestDiff) {
             smallestDiff = Math.abs(percentage - cloudiness * 100);
             closestPercentage = percentage;
@@ -320,17 +372,64 @@ function colorT(t, sunAngle, clouds, rainIntensity = 0) {
 function onTestClicked() {
 
     let hourlySunAngles = [];
-    const otherLocation = { latitude: 44.983, longitude: -67.284, utc: -5 };
-    const sunAngleCalculator = new SunAngleCalculator();
 
     for (let i = 0; i < 24; i++) {
 
-        let date = new Date(2021, 0, 13, i);
+        let millis = new Date(Date.UTC(1959, 2, 4)).getTime();
+        millis += (i - otherLocation.utc) * 1000 * 60 * 60;
+
+        let date = new Date(millis);
         let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), otherLocation);
         hourlySunAngles.push(sunAngle);
 
-        // console.log(`//    { time: ${i}, temperature: t, sunAngle: ${sunAngle.toFixed(1)}}, clouds: c}, //`);
+        let position = localStorage.getItem('coords').split(",");
+        let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
+        let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(sunAngle, currentLocation, new Date());
+        console.log(`//    { time: ${i}, temperature: t, sunAngle: ${sunAngle.toFixed(1)}}, clouds: c}, // ${formatLocalTime(otherLocalTime)}`);
+    }
+}
+
+function formatLocalTime(localTime) {
+    let localTimeArr = localTime.map((rawLocalTime) => {
+        let hour = Math.floor(rawLocalTime);
+        let percentage = Math.round((rawLocalTime - hour) * 100);
+        return `${hour}h ${percentage}%`;
+    });
+
+    return localTimeArr.join('-');
+}
+
+function getOtherTime() {
+    let position = localStorage.getItem('coords').split(',');
+    let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
+    let currentSunAngle = sunAngleCalculator.getSunAngleFromTime(new Date(), currentLocation);
+    let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(currentSunAngle, otherLocation, otherDate);
+    let formattedOtherTime = otherLocalTime.map(localTime => {
+        let hour = Math.floor(localTime);
+        let minutes = (localTime - hour) * 60;
+
+        minutes = minutes.toFixed(0);
+
+        if(minutes < 10) {
+            minutes += '0' + minutes;
+        }
+
+        return `${hour}:${minutes}`;
+    });
+
+    if(isNaN(otherLocalTime[0])) {
+        document.querySelector("#clock").innerHTML = "--:--";
+    } else {
+        document.querySelector("#clock").innerHTML = `${formattedOtherTime[0]} - ${formattedOtherTime[1]}`;
     }
 
-    console.log(hourlySunAngles.map(a => a.toFixed(1)));
+    return otherLocalTime;
+}
+
+function getCurrentLocation(callback) {
+    if(navigator.geolocation) {
+        navigator.geolocation.watchPosition(callback, (e) => console.error(e));
+    } else {
+        console.error("Geolocation is not supported by this browser.")
+    }
 }
