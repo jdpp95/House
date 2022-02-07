@@ -33,7 +33,7 @@ class SunAngleCalculator {
         let dayOfYear = this.getDayOfYear(date);
 
         let declination = this.getDeclination(dayOfYear) * this.TO_RADIANS;
-        let localTime = date.getUTCHours() + utc * 1 + date.getUTCMinutes() / 60 + date.getUTCSeconds() * 3600;
+        let localTime = date.getUTCHours() + utc * 1 + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600;
         let hourAngle = this.getHourAngleFromLocalTime(longitude, dayOfYear, localTime, utc) * this.TO_RADIANS;
 
         return Math.asin(Math.sin(declination) * Math.sin(latitude)
@@ -65,7 +65,7 @@ class SunAngleCalculator {
         declination *= this.TO_RADIANS;
         latitude *= this.TO_RADIANS;
 
-        return Math.acos((Math.sin(sunAngle) - Math.sin(declination) * Math.sin(latitude)) / (Math.cos(declination) * Math.cos(latitude)));
+        return Math.acos((Math.sin(sunAngle) - Math.sin(declination) * Math.sin(latitude)) / (Math.cos(declination) * Math.cos(latitude))) * this.TO_DEGREES;
     }
 
     getTimeCorrection(longitude, localStandardTimeMeridian, equationOfTime) {
@@ -82,9 +82,9 @@ class SunAngleCalculator {
     }
 }
 
-const otherLocation = { latitude: 48.486, longitude: -58.402, utc: -4 };
+const otherLocation = { latitude: 49.318, longitude: -54.708, utc: -3.5 };
 const sunAngleCalculator = new SunAngleCalculator();
-const otherDate = new Date(1959, 2, 4);
+const otherDate = new Date(1959, 3, 7);
 
 window.onload = () => {
     let weatherData = JSON.parse(localStorage.getItem('weatherData'));
@@ -129,13 +129,42 @@ window.onload = () => {
         localStorage.setItem('coords', `${position.coords.latitude},${position.coords.longitude}`);
     });
 
-    updateTime();
+    updateTime([0, 0]);
 }
 
-function updateTime() {
+function updateTime(previousLocalTime) {
     setTimeout(() => {
-        getOtherTime();
-        updateTime();
+        let otherLocalTime = getOtherTime();
+
+        let diff1 = otherLocalTime[0] - previousLocalTime[0];
+        let diff2 = otherLocalTime[1] - previousLocalTime[1];
+
+        let rate = Math.abs(diff1) * 60 * 60;
+
+        console.log(`Rate: ${rate.toFixed(1)}x`);
+
+        // Which of the two local times is increasing?
+        // diff1 is greater than diff2 before noon, diff2 is greater than diff 1 in the afternoon
+        let localTime = diff1 > diff2 ? otherLocalTime[0] : otherLocalTime[1];
+
+        let hour = Math.floor(localTime);
+        let minutes = (localTime - hour) * 60;
+
+        minutes = Math.floor(minutes);
+
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+
+        let formattedOtherTime = `${hour}:${minutes}`;
+
+        if (isNaN(otherLocalTime[0])) {
+            document.querySelector("#clock").innerHTML = "--:--";
+        } else {
+            document.querySelector("#clock").innerHTML = `${formattedOtherTime}`;
+        }
+
+        updateTime(otherLocalTime);
     }, 1000);
 }
 
@@ -375,7 +404,7 @@ function onTestClicked() {
 
     for (let i = 0; i < 24; i++) {
 
-        let millis = new Date(Date.UTC(1959, 2, 4)).getTime();
+        let millis = new Date(Date.UTC(1959, 3, 7)).getTime();
         millis += (i - otherLocation.utc) * 1000 * 60 * 60;
 
         let date = new Date(millis);
@@ -404,30 +433,12 @@ function getOtherTime() {
     let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
     let currentSunAngle = sunAngleCalculator.getSunAngleFromTime(new Date(), currentLocation);
     let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(currentSunAngle, otherLocation, otherDate);
-    let formattedOtherTime = otherLocalTime.map(localTime => {
-        let hour = Math.floor(localTime);
-        let minutes = (localTime - hour) * 60;
-
-        minutes = Math.floor(minutes);
-
-        if(minutes < 10) {
-            minutes += '0' + minutes;
-        }
-
-        return `${hour}:${minutes}`;
-    });
-
-    if(isNaN(otherLocalTime[0])) {
-        document.querySelector("#clock").innerHTML = "--:--";
-    } else {
-        document.querySelector("#clock").innerHTML = `${formattedOtherTime[0]} - ${formattedOtherTime[1]}`;
-    }
 
     return otherLocalTime;
 }
 
 function getCurrentLocation(callback) {
-    if(navigator.geolocation) {
+    if (navigator.geolocation) {
         navigator.geolocation.watchPosition(callback, (e) => console.error(e));
     } else {
         console.error("Geolocation is not supported by this browser.")
