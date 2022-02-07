@@ -84,7 +84,7 @@ class SunAngleCalculator {
 
 const otherLocation = { latitude: 49.318, longitude: -54.708, utc: -3.5 };
 const sunAngleCalculator = new SunAngleCalculator();
-const otherDate = new Date(1959, 3, 7);
+const otherDate = new Date(Date.UTC(1959, 3, 7));
 
 window.onload = () => {
     let weatherData = JSON.parse(localStorage.getItem('weatherData'));
@@ -404,7 +404,7 @@ function onTestClicked() {
 
     for (let i = 0; i < 24; i++) {
 
-        let millis = new Date(Date.UTC(1959, 3, 7)).getTime();
+        let millis = otherDate.getTime();
         millis += (i - otherLocation.utc) * 1000 * 60 * 60;
 
         let date = new Date(millis);
