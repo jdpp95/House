@@ -49,6 +49,8 @@ window.onload = () => {
 }
 
 function onUpdateClicked() {
+    let houseRenderer = new HouseRenderer();
+
     let outdoorTemperature = document.querySelector('#outdoorTemperature').value;
     let indoorTemperature1 = document.querySelector('#indoorTemperature1').value;
     let indoorTemperature2 = document.querySelector('#indoorTemperature2').value;
@@ -68,7 +70,7 @@ function onUpdateClicked() {
     const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility };
     localStorage.setItem('weatherData', JSON.stringify(weatherData));
 
-    colorHouse({ temperature: indoorTemperature2, floor: 3 });
-    colorHouse({ temperature: indoorTemperature1, floor: 1 });
-    colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
+    houseRenderer.colorHouse({ temperature: indoorTemperature2, floor: 3 });
+    houseRenderer.colorHouse({ temperature: indoorTemperature1, floor: 1 });
+    houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
 }
