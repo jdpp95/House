@@ -1,6 +1,7 @@
-const otherLocation = { latitude: 49.726, longitude: -77.626, utc: -4 };
+const otherLocation = { latitude: 47.663, longitude: -73.04, utc: -4 };
 const sunAngleCalculator = new SunAngleCalculator();
-const otherDate = new Date(Date.UTC(1959, 4, 10));
+const otherDate = new Date(Date.UTC(1960, 5, 12));
+const timeTransformer = new TimeTransformer();
 
 window.onload = () => {
     let weatherData = JSON.parse(localStorage.getItem('weatherData'));
@@ -41,11 +42,11 @@ window.onload = () => {
 
     onUpdateClicked();
 
-    getCurrentLocation((position) => {
+    timeTransformer.getCurrentLocation((position) => {
         localStorage.setItem('coords', `${position.coords.latitude},${position.coords.longitude}`);
     });
 
-    updateTime([0, 0]);
+    timeTransformer.updateTime();
 }
 
 function onUpdateClicked() {
