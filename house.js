@@ -75,3 +75,7 @@ function onUpdateClicked() {
     houseRenderer.colorHouse({ temperature: indoorTemperature1, floor: 1 });
     houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
 }
+
+function onTestClicked() {
+    timeTransformer.printHourlySunAngles();
+}
