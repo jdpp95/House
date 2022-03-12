@@ -12,6 +12,7 @@
     <script src="sun_angle_calculator.js"></script>
     <script src="time_transformer.js"></script>
     <script src="house_renderer.js"></script>
+    <script src="gradient.js"></script>
     <script src="house.js"></script>
     <title>House</title>
 </head>
@@ -23,7 +24,7 @@
     <canvas id="stars" class="layer"> </canvas>
     <div id="fog" class="layer"></div>
     <div class="row">
-        <div id="ui-panel" class="col-lg-5 col-sm-4 col-12">
+        <div id="ui-panel" class="col-lg-5 col-sm-5 col-11">
             <div class="container mt-3 sticky-top">
                 <!-- <form id="temperatureForm"> -->
                 <h5>Outdoor</h5>
@@ -160,7 +161,7 @@
                 <!-- </form> -->
             </div>
         </div>
-        <div class="col-lg-7 col-sm-8 col-12">
+        <div class="col-lg-6 col-sm-6 col-12">
             <div id="house" class="container b2">
                 <div class="row floor-slab"></div>
                 <div id="floor-4" class="row floor">
@@ -199,6 +200,7 @@
                 <div class="row floor-slab"></div>
             </div>
         </div>
+        <div class="col-1" id="gradient"></div>
     </div>
 </body>
 

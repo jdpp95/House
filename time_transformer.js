@@ -54,7 +54,7 @@ class TimeTransformer {
             let position = localStorage.getItem('coords').split(",");
             let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
             let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(sunAngle, currentLocation, new Date());
-            console.log(`//     { time: ${i},  temperature: t,  sunAngle: ${sunAngle.toFixed(1)}},    clouds: c}, // ${this.formatLocalTime(otherLocalTime)}`);
+            console.log(`//     { time: ${i},  temperature: t,  sunAngle: ${sunAngle.toFixed(1)},    clouds: c}, // ${this.formatLocalTime(otherLocalTime)}`);
         }
     }
 

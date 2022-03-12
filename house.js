@@ -47,6 +47,8 @@ window.onload = () => {
     });
 
     timeTransformer.updateTime();
+
+    var gradient = new Gradient();
 }
 
 function onUpdateClicked() {
