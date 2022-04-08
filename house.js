@@ -3,6 +3,11 @@ const sunAngleCalculator = new SunAngleCalculator();
 const otherDate = new Date(Date.UTC(1960, 5, 12));
 const timeTransformer = new TimeTransformer();
 
+$(document).ready(() => {
+    console.log($('#datetimepicker1'));
+    $('#datetimepicker1').datepicker();
+});
+
 window.onload = () => {
     let weatherData = JSON.parse(localStorage.getItem('weatherData'));
 
