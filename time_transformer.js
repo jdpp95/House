@@ -1,6 +1,7 @@
 class TimeTransformer {
 
     otherDate;
+    otherLocation;
 
     constructor() { }
 
@@ -9,7 +10,8 @@ class TimeTransformer {
         localStorage.setItem('otherDate', date.toISOString());
     }
 
-    updateTime(previousLocalTime = [0, 0]) {
+    updateTime(locationData, previousLocalTime = [0, 0]) {
+        this.otherLocation = locationData;
         setTimeout(() => {
             let otherLocalTime = this.getOtherTime();
 
@@ -41,7 +43,7 @@ class TimeTransformer {
                 document.querySelector("#clock").innerHTML = `${formattedOtherTime}`;
             }
 
-            this.updateTime(otherLocalTime);
+            this.updateTime(locationData, otherLocalTime);
         }, 1000);
     }
 
@@ -52,10 +54,10 @@ class TimeTransformer {
         for (let i = 0; i < 24; i++) {
 
             let millis = otherDate.getTime();
-            millis += (i - otherLocation.utc) * 1000 * 60 * 60;
+            millis += (i - this.otherLocation.utc) * 1000 * 60 * 60;
 
             let date = new Date(millis);
-            let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), otherLocation);
+            let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), this.otherLocation);
             hourlySunAngles.push(sunAngle);
 
             let position = localStorage.getItem('coords').split(",");
@@ -79,7 +81,7 @@ class TimeTransformer {
         let position = localStorage.getItem('coords').split(',');
         let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
         let currentSunAngle = sunAngleCalculator.getSunAngleFromTime(new Date(), currentLocation);
-        let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(currentSunAngle, otherLocation, otherDate);
+        let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(currentSunAngle, this.otherLocation, otherDate);
 
         return otherLocalTime;
     }

@@ -1,6 +1,4 @@
-const otherLocation = { latitude: 47.663, longitude: -73.04, utc: -4 };
 const sunAngleCalculator = new SunAngleCalculator();
-let otherDate;
 const timeTransformer = new TimeTransformer();
 
 $(document).ready(() => {
@@ -20,6 +18,20 @@ window.onload = () => {
     document.querySelector('#rainIntensity').value = weatherData.rainIntensity;
     document.querySelector('#visibility').value = weatherData.visibility;
     document.querySelector("#datetimepicker1").onchange = onDateChanged;
+
+    let utc, coords;
+    if (localStorage.getItem('locationData')) {
+        let locationData = JSON.parse(localStorage.getItem('locationData'));
+        utc = locationData.utc;
+        coords = locationData.coords;
+    }
+    let coordsInput = document.querySelector('#coords');
+    coordsInput.value = coords;
+    coordsInput.onchange = updateLocationData;
+
+    let utcInput = document.querySelector('#utc');
+    utcInput.value = utc;
+    utcInput.onchange = updateLocationData;
 
     let isRainingCheckbox = document.querySelector('#isRainingCheckbox');
 
@@ -57,7 +69,12 @@ window.onload = () => {
         localStorage.setItem('coords', `${position.coords.latitude},${position.coords.longitude}`);
     });
 
-    timeTransformer.updateTime();
+    let locationData = {};
+    locationData.latitude = coords.split(",")[0];
+    locationData.longitude = coords.split(",")[1];
+    locationData.utc = utc;
+
+    timeTransformer.updateTime(locationData);
 
     var gradient = new Gradient();
 }
@@ -65,6 +82,18 @@ window.onload = () => {
 function onDateChanged() {
     otherDate = $('#datetimepicker1').datepicker('getUTCDate');
     timeTransformer.setDate(otherDate);
+}
+
+function updateLocationData() {
+    console.log("updateLocationData()");
+    let coordsInput = document.querySelector("#coords");
+    let utcInput = document.querySelector("#utc");
+
+    let coords = coordsInput.value;
+    let utc = utcInput.value;
+
+    let locationData = { coords, utc };
+    localStorage.setItem('locationData', JSON.stringify(locationData));
 }
 
 function onUpdateClicked() {
