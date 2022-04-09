@@ -1,11 +1,12 @@
 const otherLocation = { latitude: 47.663, longitude: -73.04, utc: -4 };
 const sunAngleCalculator = new SunAngleCalculator();
-const otherDate = new Date(Date.UTC(1960, 5, 12));
+let otherDate;
 const timeTransformer = new TimeTransformer();
 
 $(document).ready(() => {
-    console.log($('#datetimepicker1'));
-    $('#datetimepicker1').datepicker();
+    $('#datetimepicker1').datepicker({
+        format: 'dd/mm/yyyy'
+    });
 });
 
 window.onload = () => {
@@ -18,8 +19,10 @@ window.onload = () => {
     document.querySelector('#sunAngle').value = weatherData.sunAngle;
     document.querySelector('#rainIntensity').value = weatherData.rainIntensity;
     document.querySelector('#visibility').value = weatherData.visibility;
+    document.querySelector("#datetimepicker1").onchange = onDateChanged;
 
     let isRainingCheckbox = document.querySelector('#isRainingCheckbox');
+
     isRainingCheckbox.addEventListener('change', e => {
 
         let cloudCoverControl = document.querySelector('#cloudCoverControl');
@@ -43,7 +46,10 @@ window.onload = () => {
         } else {
             visibilityInputGroup.style.display = 'none';
         }
-    })
+    });
+
+    $('#datetimepicker1').datepicker('setUTCDate', new Date(localStorage.getItem('otherDate')));
+    onDateChanged();
 
     onUpdateClicked();
 
@@ -54,6 +60,11 @@ window.onload = () => {
     timeTransformer.updateTime();
 
     var gradient = new Gradient();
+}
+
+function onDateChanged() {
+    otherDate = $('#datetimepicker1').datepicker('getUTCDate');
+    timeTransformer.setDate(otherDate);
 }
 
 function onUpdateClicked() {
@@ -81,6 +92,11 @@ function onUpdateClicked() {
     houseRenderer.colorHouse({ temperature: indoorTemperature2, floor: 3 });
     houseRenderer.colorHouse({ temperature: indoorTemperature1, floor: 1 });
     houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
+
+    document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + 1.8).toFixed(1) + "°C";
+    document.getElementById("window-2").innerHTML = (indoorTemperature2 * 1 + 1.8).toFixed(1) + "°C";
+    document.getElementById("window-3").innerHTML = (indoorTemperature2 * 1 + 1.8).toFixed(1) + "°C";
+    document.getElementById("window-4").innerHTML = (indoorTemperature1 * 1 + 1.8).toFixed(1) + "°C";
 }
 
 function onTestClicked() {

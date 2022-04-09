@@ -1,6 +1,13 @@
 class TimeTransformer {
 
+    otherDate;
+
     constructor() { }
+
+    setDate(date){
+        this.otherDate = date;
+        localStorage.setItem('otherDate', date.toISOString());
+    }
 
     updateTime(previousLocalTime = [0, 0]) {
         setTimeout(() => {
