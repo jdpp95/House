@@ -1,8 +1,8 @@
 class Gradient {
     constructor() {
         let colors = [
-            // { time: 0, temperature: -7, sunAngle: -18.2, clouds: 0.73 }, // 4h 92%-19h 32%
-            // { time: 1, temperature: -7, sunAngle: -19.1, clouds: 0.75 }, // 4h 86%-19h 38%
+            { time: 0, temperature: -7, sunAngle: -18.2, clouds: 0.73 }, // 4h 92%-19h 32%
+            { time: 1, temperature: -7, sunAngle: -19.1, clouds: 0.75 }, // 4h 86%-19h 38%
             // { time: 2, temperature: -7, sunAngle: -17.5, clouds: 0.75 }, // 4h 97%-19h 27%
             // { time: 3, temperature: -7, sunAngle: -13.5, clouds: 0.75 }, // 5h 24%-19h 1%
             // { time: 4, temperature: -7, sunAngle: -7.5, clouds: 0.60 }, // 5h 64%-18h 60%
@@ -32,6 +32,7 @@ class Gradient {
 
     setGradientColors(weatherData) {
         let tempGradient = document.getElementById("gradient");
+        let gradientTextElement = document.getElementById("gradient-text");
         let style = "";
         let colorTemperature = new ColorTemperature();
 
@@ -54,10 +55,6 @@ class Gradient {
                     style += `${hsl} ${position}%, `;
                 }
 
-                if (hourlyWeather) {
-                    console.log(`${hourlyWeather.time}:00 ${(hourlyWeather.temperature * 1.8 + 32).toFixed(0)} \u00B0F`);
-                }
-
                 if (i == 23) {
                     style = style.substring(0, style.length - 2) + ")";
                 }
@@ -67,7 +64,11 @@ class Gradient {
         const last = weatherData[weatherData.length - 1];
         console.log(colorTemperature.colorT(last.temperature, last.sunAngle, last.clouds, last.rain));
 
-        console.log(style)
+        let gradientText = "";
+        gradientText += `${last.time}:00 ${(last.temperature * 1.8 + 32).toFixed(0)} °F \n`;
+        gradientText += colorTemperature.weatherToString(last.temperature, last.clouds);
+        gradientTextElement.innerText = gradientText;
+
         tempGradient.style.background = style;
     }
 }

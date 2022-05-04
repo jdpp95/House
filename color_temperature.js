@@ -73,4 +73,48 @@ class ColorTemperature {
 
         return { hue, sat, lum };
     }
+
+    weatherToString(temperature, cloudiness) {
+        let weatherConditions = "";
+
+        if(cloudiness >= 0 && cloudiness <= 0.125){
+            weatherConditions = "Clear";
+        } else if (cloudiness >= 0.125 && cloudiness <= 0.375) {
+            weatherConditions = "Mostly clear";
+        } else if (cloudiness >= 0.375 && cloudiness <= 0.5) {
+            weatherConditions = "Partly clear";
+        } else if (cloudiness >= 0.5 && cloudiness <= 0.625) {
+            weatherConditions = "Partly cloudy";
+        } else if (cloudiness >= 0.625 && cloudiness <= 0.9) {
+            weatherConditions = "Mostly cloudy";
+        } else if (cloudiness >= 0.9 && cloudiness <= 1) {
+            weatherConditions = "Overcast";
+        } else if (temperature > 2) {
+            if(cloudiness > 1 && cloudiness <= 1.3) {
+                weatherConditions = "Drizzle";
+            } else if (cloudiness > 1.3 && cloudiness <= 1.6) {
+                weatherConditions = "Rain";
+            } else if (cloudiness > 1.6 && cloudiness <= 2) {
+                weatherConditions = "Heavy rain";
+            }
+        } else if (temperature < 1) {
+            if(cloudiness > 1 && cloudiness <= 1.3) {
+                weatherConditions = "Light snow";
+            } else if (cloudiness > 1.3 && cloudiness <= 1.6) {
+                weatherConditions = "Snow";
+            } else if (cloudiness > 1.6 && cloudiness <= 2) {
+                weatherConditions = "Blizzard";
+            }
+        } else {
+            if(cloudiness > 1 && cloudiness <= 1.3) {
+                weatherConditions = "Light sleet";
+            } else if (cloudiness > 1.3 && cloudiness <= 1.6) {
+                weatherConditions = "Sleet";
+            } else if (cloudiness > 1.6 && cloudiness <= 2) {
+                weatherConditions = "Heavy sleet";
+            }
+        }
+
+        return weatherConditions;
+    }
 }
