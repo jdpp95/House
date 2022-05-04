@@ -33,10 +33,10 @@ class Gradient {
     setGradientColors(weatherData) {
         let tempGradient = document.getElementById("gradient");
         let style = "";
-        let houseRenderer = new HouseRenderer();
+        let colorTemperature = new ColorTemperature();
 
         if (weatherData.length == 1) {
-            let { hue, sat, lum } = houseRenderer.colorT(weatherData[0]['temperature'], weatherData[0]['sunAngle'], weatherData[0]['clouds'], weatherData[0]['rain']);
+            let { hue, sat, lum } = colorTemperature.colorT(weatherData[0]['temperature'], weatherData[0]['sunAngle'], weatherData[0]['clouds'], weatherData[0]['rain']);
             let hsl = `hsl(${hue}, ${sat}%, ${lum}%)`;
             style = hsl;
         } else {
@@ -49,7 +49,7 @@ class Gradient {
                 let position = Math.round(100 * i / 24);
 
                 if (weatherData[i]) {
-                    let { hue, sat, lum } = houseRenderer.colorT(hourlyWeather.temperature, hourlyWeather.sunAngle, hourlyWeather.clouds, hourlyWeather.rain);
+                    let { hue, sat, lum } = colorTemperature.colorT(hourlyWeather.temperature, hourlyWeather.sunAngle, hourlyWeather.clouds, hourlyWeather.rain);
                     let hsl = `hsl(${hue}, ${sat}%, ${lum}%)`;
                     style += `${hsl} ${position}%, `;
                 }
@@ -65,7 +65,7 @@ class Gradient {
         }
 
         const last = weatherData[weatherData.length - 1];
-        console.log(houseRenderer.colorT(last.temperature, last.sunAngle, last.clouds, last.rain));
+        console.log(colorTemperature.colorT(last.temperature, last.sunAngle, last.clouds, last.rain));
 
         console.log(style)
         tempGradient.style.background = style;

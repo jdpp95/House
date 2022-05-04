@@ -1,4 +1,6 @@
 class HouseRenderer {
+    colorTemperature = new ColorTemperature();
+    utils = new Utils();
 
     constructor() { }
 
@@ -8,7 +10,7 @@ class HouseRenderer {
         const floor3 = document.querySelector('#floor-3');
         const floor4 = document.querySelector('#floor-4');
 
-        const { hue, sat, lum } = this.colorT(temperature, 0, 0.5);
+        const { hue, sat, lum } = this.colorTemperature.colorT(temperature, 0, 0.5);
         const hsl = `hsl(${hue}, ${sat}%, ${lum}%)`;
 
         switch (floor) {
@@ -39,7 +41,7 @@ class HouseRenderer {
         this.drawStars(sunAngle);
 
         // Color sky and clouds
-        const { hue, sat, lum } = this.colorT(temperature, sunAngle, 0, rainIntensity);
+        const { hue, sat, lum } = this.colorTemperature.colorT(temperature, sunAngle, 0, rainIntensity);
         const hsl = `hsl(${hue}, ${sat}%, ${lum}%)`;
         let brightness = 0;
         const MIN_BRIGHTNESS = 0.3;
@@ -50,7 +52,7 @@ class HouseRenderer {
         } else if (sunAngle <= -12) {
             brightness = MIN_BRIGHTNESS;
         } else {
-            brightness = this.transition(MIN_BRIGHTNESS, MAX_BRIGHTNESS, -12, 0, sunAngle);
+            brightness = this.utils.transition(MIN_BRIGHTNESS, MAX_BRIGHTNESS, -12, 0, sunAngle);
         }
 
         let grayscale = 0;
@@ -58,7 +60,7 @@ class HouseRenderer {
         const MAX_GRAYSCALE = 100;
 
         if (rainIntensity > 1) {
-            grayscale = this.transition(MIN_GRAYSCALE, MAX_GRAYSCALE, 1, 3, Math.pow(rainIntensity, 1 / 2));
+            grayscale = this.utils.transition(MIN_GRAYSCALE, MAX_GRAYSCALE, 1, 3, Math.pow(rainIntensity, 1 / 2));
         } else {
             grayscale = MIN_GRAYSCALE;
         }
@@ -128,82 +130,5 @@ class HouseRenderer {
         }
 
         return closestPercentage;
-    }
-
-    transition(start1, end1, start2, end2, value2) {
-        let ratio = (value2 - start2) / (end2 - start2);
-        return start1 + (end1 - start1) * ratio;
-    }
-
-    colorT(t, sunAngle, clouds, rainIntensity = 0) {
-
-        t = t * 1.8 + 32; // Above algorithm works in Fahrenheit
-
-        var hue;
-        var sat;
-
-        // Saturation
-        if (clouds) {
-            sat = (1 - clouds) * 40 + 60;
-        } else {
-            sat = 100;
-        }
-
-        if (rainIntensity >= 1) {
-            sat = Math.max(60 - (rainIntensity - 1) * 10, 15);
-        }
-
-        // Lightness
-
-        var lum = 0;
-
-        const MAX_LUM = 50;
-        const MIN_LUM = 15;
-
-        if (t > 100) {
-            lum = Math.max(150 - t, 10);
-        } else if (sunAngle > 0) {
-            lum = MAX_LUM;
-        } else if (sunAngle < -12) {
-            lum = MIN_LUM;
-        } else {
-            lum = this.transition(MAX_LUM, MIN_LUM, 0, -12, sunAngle)
-        }
-
-        // Hue
-
-        let colors = [
-            [0, 270],
-            [14, 240],
-            [32, 180],
-            [44.6, 150],
-            [50, 120],
-            [55.4, 90],
-            [68, 60],
-            [80, 45],
-            [90, 30],
-            [100, 0],
-            [100, 360],
-            [125, 360]
-        ];
-
-        if (t <= 0) hue = 270;
-        else if (t > 125) hue = 360;
-        else {
-            var index = 0;
-            for (index = 0; index < colors.length - 2; index++) {
-                if (t >= colors[index][0] && t < colors[index + 1][0]) {
-                    break;
-                }
-            }
-
-            hue = this.transition(colors[index][1], colors[index + 1][1], colors[index][0], colors[index + 1][0], t);
-        }
-
-        sat = Math.round(sat);
-        hue = Math.round(hue);
-        lum = Math.round(lum);
-
-        return { hue, sat, lum };
     }
 }

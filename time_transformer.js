@@ -20,7 +20,7 @@ class TimeTransformer {
 
             let rate = Math.abs(diff1) * 60 * 60;
 
-            console.log(`Rate: ${rate.toFixed(1)}x`);
+            // console.log(`Rate: ${rate.toFixed(1)}x`);
 
             // Which of the two local times is increasing?
             // diff1 is greater than diff2 before noon, diff2 is greater than diff 1 in the afternoon
