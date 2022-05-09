@@ -76,7 +76,7 @@ class HouseRenderer {
         fog.style.filter = `brightness(${brightness})`;
 
         sky.style.backgroundColor = hsl;
-        clouds.style.filter = `hue-rotate(${hue}deg) brightness(${brightness}) grayscale(${grayscale}%)`;
+        clouds.style.filter = `hue-rotate(${hue + 128}deg) brightness(${brightness}) grayscale(${grayscale}%)`;
     }
 
     drawStar(context, x, y) {
