@@ -32,7 +32,6 @@ class HouseRenderer {
 
     colorSky({ temperature, sunAngle, cloudiness, rainIntensity, hasFog, visibility }) {
         const sky = document.querySelector('#sky');
-        //const clouds = document.querySelector('#clouds');
         const fog = document.querySelector('#fog');
 
         //Set stars if nightime
@@ -74,31 +73,29 @@ class HouseRenderer {
         fog.style.filter = `brightness(${brightness})`;
 
         sky.style.backgroundColor = hsl;
-        
+
         // Set background image
         this.drawClouds(cloudiness, grayscale, hue, sunAngle);
     }
-    
+
     drawClouds(cloudiness, grayscale, hue, sunAngle) {
         const renderedCloudinessPercentage = this.getClosestPercentage(cloudiness);
         const cloudsUrl = `https://raw.githubusercontent.com/jdpp95/House/master/assets/clouds/clouds-${renderedCloudinessPercentage}.png`;
-        
+
         // DOM Manipulation
-        
+
         const clouds = document.querySelector('#clouds');
         const cloudsImg = document.createElement('img');
         cloudsImg.src = cloudsUrl;
         cloudsImg.crossOrigin = "anonymous";
-        clouds.innerHTML = '';
-        clouds.appendChild(cloudsImg);
-        
+
         // Color manipulation
-        
+
         const MIN_CLOUD_BRIGHTNESS = -0.45;
         const MAX_CLOUD_BRIGHTNESS = 0;
         const MIN_CSS_BRIGHTNESS = 0.3;
         const MAX_CSS_BRIGHTNESS = 1;
-        
+
         let cloudBrightness, cssBrightness;
         if (sunAngle >= 0) {
             cloudBrightness = MAX_CLOUD_BRIGHTNESS;
@@ -110,19 +107,21 @@ class HouseRenderer {
             cloudBrightness = this.utils.transition(MIN_CLOUD_BRIGHTNESS, MAX_CLOUD_BRIGHTNESS, -12, 0, sunAngle);
             cssBrightness = this.utils.transition(MIN_CSS_BRIGHTNESS, MAX_CSS_BRIGHTNESS, -12, 0, sunAngle);
         }
-        
+
         //Convert hue to API's value
         let otherHue = (hue - 180) / 180;
-        if (otherHue < 0){
+        if (otherHue < 0) {
             otherHue += 1;
         } else {
             otherHue -= 1;
         }
-        
+
         cloudsImg.onload = () => {
             let texture = this.canvas.texture(cloudsImg);
             this.canvas.draw(texture).hueSaturation(otherHue, 0).brightnessContrast(0, grayscale).update();
-            
+
+            clouds.innerHTML = '';
+            clouds.appendChild(cloudsImg);
             cloudsImg.parentNode.insertBefore(this.canvas, cloudsImg);
             cloudsImg.parentNode.removeChild(cloudsImg);
 
