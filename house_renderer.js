@@ -1,8 +1,11 @@
 class HouseRenderer {
     colorTemperature = new ColorTemperature();
     utils = new Utils();
+    canvas;
 
-    constructor() { }
+    constructor() {
+        this.canvas = fx.canvas();
+    }
 
     colorHouse({ temperature, floor }) {
         const floor1 = document.querySelector('#floor-1');
@@ -29,13 +32,8 @@ class HouseRenderer {
 
     colorSky({ temperature, sunAngle, cloudiness, rainIntensity, hasFog, visibility }) {
         const sky = document.querySelector('#sky');
-        const clouds = document.querySelector('#clouds');
+        //const clouds = document.querySelector('#clouds');
         const fog = document.querySelector('#fog');
-
-        // Set background image
-        const renderedCloudinessPercentage = this.getClosestPercentage(cloudiness);
-        const cloudsUrl = `assets/clouds/clouds-${renderedCloudinessPercentage}.png`;
-        clouds.style.backgroundImage = `url(${cloudsUrl})`;
 
         //Set stars if nightime
         this.drawStars(sunAngle);
@@ -44,23 +42,23 @@ class HouseRenderer {
         const { hue, sat, lum } = this.colorTemperature.colorT(temperature, sunAngle, 0, rainIntensity);
         const hsl = `hsl(${hue}, ${sat}%, ${lum}%)`;
         let brightness = 0;
-        const MIN_BRIGHTNESS = 0.3;
-        const MAX_BRIGHTNESS = 1.45;
+        const MIN_FOG_BRIGHTNESS = 0.3;
+        const MAX_FOG_BRIGHTNESS = 1.45;
 
         if (sunAngle >= 0) {
-            brightness = MAX_BRIGHTNESS;
+            brightness = MAX_FOG_BRIGHTNESS;
         } else if (sunAngle <= -12) {
-            brightness = MIN_BRIGHTNESS;
+            brightness = MIN_FOG_BRIGHTNESS;
         } else {
-            brightness = this.utils.transition(MIN_BRIGHTNESS, MAX_BRIGHTNESS, -12, 0, sunAngle);
+            brightness = this.utils.transition(MIN_FOG_BRIGHTNESS, MAX_FOG_BRIGHTNESS, -12, 0, sunAngle);
         }
 
         let grayscale = 0;
-        const MIN_GRAYSCALE = 40;
-        const MAX_GRAYSCALE = 100;
+        const MIN_GRAYSCALE = -0.5;
+        const MAX_GRAYSCALE = -1;
 
         if (rainIntensity > 1) {
-            grayscale = this.utils.transition(MIN_GRAYSCALE, MAX_GRAYSCALE, 1, 3, Math.pow(rainIntensity, 1 / 2));
+            grayscale = this.utils.transition(MIN_GRAYSCALE, MAX_GRAYSCALE, 0, 3, Math.pow(rainIntensity, 1 / 2));
         } else {
             grayscale = MIN_GRAYSCALE;
         }
@@ -76,7 +74,60 @@ class HouseRenderer {
         fog.style.filter = `brightness(${brightness})`;
 
         sky.style.backgroundColor = hsl;
-        clouds.style.filter = `hue-rotate(${hue}deg) brightness(${brightness}) grayscale(${grayscale}%)`;
+        
+        // Set background image
+        this.drawClouds(cloudiness, grayscale, hue, sunAngle);
+    }
+    
+    drawClouds(cloudiness, grayscale, hue, sunAngle) {
+        const renderedCloudinessPercentage = this.getClosestPercentage(cloudiness);
+        const cloudsUrl = `https://raw.githubusercontent.com/jdpp95/House/master/assets/clouds/clouds-${renderedCloudinessPercentage}.png`;
+        
+        // DOM Manipulation
+        
+        const clouds = document.querySelector('#clouds');
+        const cloudsImg = document.createElement('img');
+        cloudsImg.src = cloudsUrl;
+        cloudsImg.crossOrigin = "anonymous";
+        clouds.innerHTML = '';
+        clouds.appendChild(cloudsImg);
+        
+        // Color manipulation
+        
+        const MIN_CLOUD_BRIGHTNESS = -0.45;
+        const MAX_CLOUD_BRIGHTNESS = 0;
+        const MIN_CSS_BRIGHTNESS = 0.3;
+        const MAX_CSS_BRIGHTNESS = 1;
+        
+        let cloudBrightness, cssBrightness;
+        if (sunAngle >= 0) {
+            cloudBrightness = MAX_CLOUD_BRIGHTNESS;
+            cssBrightness = MAX_CSS_BRIGHTNESS;
+        } else if (sunAngle <= -12) {
+            cloudBrightness = MAX_CLOUD_BRIGHTNESS;
+            cssBrightness = MIN_CSS_BRIGHTNESS;
+        } else {
+            cloudBrightness = this.utils.transition(MIN_CLOUD_BRIGHTNESS, MAX_CLOUD_BRIGHTNESS, -12, 0, sunAngle);
+            cssBrightness = this.utils.transition(MIN_CSS_BRIGHTNESS, MAX_CSS_BRIGHTNESS, -12, 0, sunAngle);
+        }
+        
+        //Convert hue to API's value
+        let otherHue = (hue - 180) / 180;
+        if (otherHue < 0){
+            otherHue += 1;
+        } else {
+            otherHue -= 1;
+        }
+        
+        cloudsImg.onload = () => {
+            let texture = this.canvas.texture(cloudsImg);
+            this.canvas.draw(texture).hueSaturation(otherHue, 0).brightnessContrast(0, grayscale).update();
+            
+            cloudsImg.parentNode.insertBefore(this.canvas, cloudsImg);
+            cloudsImg.parentNode.removeChild(cloudsImg);
+
+            clouds.style.filter = `brightness(${brightness})`;
+        }
     }
 
     drawStar(context, x, y) {

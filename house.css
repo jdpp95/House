@@ -86,7 +86,7 @@ body {
     z-index: -2;
 }
 
-#clouds-img {
+#clouds > canvas, img {
     width: inherit;
     height: inherit;
 }
