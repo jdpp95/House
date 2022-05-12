@@ -122,10 +122,10 @@ function onUpdateClicked() {
     houseRenderer.colorHouse({ temperature: indoorTemperature1, floor: 1 });
     houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
 
-    document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + 1.8).toFixed(1) + "°C";
-    document.getElementById("window-2").innerHTML = (indoorTemperature2 * 1 + 1.8).toFixed(1) + "°C";
-    document.getElementById("window-3").innerHTML = (indoorTemperature2 * 1 + 1.8).toFixed(1) + "°C";
-    document.getElementById("window-4").innerHTML = (indoorTemperature1 * 1 + 1.8).toFixed(1) + "°C";
+    document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + 2.8).toFixed(1) + "°C";
+    document.getElementById("window-2").innerHTML = (indoorTemperature2 * 1 + 2.8).toFixed(1) + "°C";
+    document.getElementById("window-3").innerHTML = (indoorTemperature2 * 1 + 2.8).toFixed(1) + "°C";
+    document.getElementById("window-4").innerHTML = (indoorTemperature1 * 1 + 2.8).toFixed(1) + "°C";
 }
 
 function onTestClicked() {
