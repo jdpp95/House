@@ -86,6 +86,11 @@ body {
     z-index: -2;
 }
 
+#clouds-img {
+    width: inherit;
+    height: inherit;
+}
+
 #stars {
     z-index: -3;
 }
