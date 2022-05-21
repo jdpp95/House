@@ -125,7 +125,7 @@ class HouseRenderer {
             cloudsImg.parentNode.insertBefore(this.canvas, cloudsImg);
             cloudsImg.parentNode.removeChild(cloudsImg);
 
-            clouds.style.filter = `brightness(${brightness})`;
+            clouds.style.filter = `brightness(${cssBrightness})`;
         }
     }
 
