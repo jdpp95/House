@@ -66,7 +66,7 @@ window.onload = () => {
     onUpdateClicked();
     let locationData = parseLocationData({coords, utc});
     timeTransformer.updateTime(locationData);
-    var gradient = new Gradient();
+    var gradient = new Gradient(timeTransformer);
 }
 
 function parseLocationData(rawLocation){
@@ -130,7 +130,7 @@ function onUpdateClicked() {
 }
 
 function onTestClicked() {
-    timeTransformer.printHourlySunAngles();
+    timeTransformer.computeHourlySunAngles();
 }
 
 function onGeoLocationButtonClicked() {

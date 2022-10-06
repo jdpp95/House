@@ -5,7 +5,7 @@ class TimeTransformer {
 
     constructor() { }
 
-    setDate(date){
+    setDate(date) {
         this.otherDate = date;
         localStorage.setItem('otherDate', date.toISOString());
     }
@@ -47,7 +47,7 @@ class TimeTransformer {
         }, 1000);
     }
 
-    printHourlySunAngles() {
+    computeHourlySunAngles() {
 
         let { utc, coords } = JSON.parse(localStorage.getItem('locationData'));
         let [latitude, longitude] = coords.split(",");
@@ -66,27 +66,42 @@ class TimeTransformer {
 
             let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), this.otherLocation);
             let sunAngllePlus1Minute = sunAngleCalculator.getSunAngleFromTime(datePlus1Minute.toISOString(), this.otherLocation);
-            
+
             previousState = isMorning;
             isMorning = sunAngle < sunAngllePlus1Minute;
 
             let itsNoonOrMidnight = (previousState !== isMorning && previousState !== undefined) || (previousState === undefined && isMorning);
 
-            hourlySunAngles.push(sunAngle);
-
             let position = localStorage.getItem('coords').split(",");
             let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
             let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(sunAngle, currentLocation, new Date());
 
-            if(!itsNoonOrMidnight){ //TODO: Try with ternary operator
-                if(isMorning){
+            if (!itsNoonOrMidnight) { //TODO: Try with ternary operator
+                if (isMorning) {
                     otherLocalTime = otherLocalTime.slice(0, 1);
                 } else {
                     otherLocalTime = otherLocalTime.slice(1);
                 }
             }
 
-            console.log(`//     { time: ${i},  temperature: t,  sunAngle: ${sunAngle.toFixed(1)},    clouds: c}, // ${this.formatLocalTime(otherLocalTime)}`);
+            let hourlySunAngleItem = {
+                time: i,
+                sunAngle,
+                otherLocalTime
+            };
+
+            hourlySunAngles.push(hourlySunAngleItem);
+        }
+
+        return hourlySunAngles;
+    }
+
+    printHourlySunAngles() {
+        let hourlySunAngles = this.computeHourlySunAngles();
+
+        for (let i = 0; i < hourlySunAngles.length; i++) {
+            let hourlySunAngleItem = hourlySunAngles[i];
+            console.log(`//     { time: ${hourlySunAngleItem.time},  temperature: t,  sunAngle: ${hourlySunAngleItem.sunAngle.toFixed(1)},    clouds: c}, // ${this.formatLocalTime(hourlySunAngleItem.otherLocalTime)}`);
         }
     }
 
@@ -118,4 +133,90 @@ class TimeTransformer {
         }
     }
 
+    transformWeatherJSON(rawHourlyWeather) {
+        let transformedHourlyAngles = this.computeHourlySunAngles();
+        let weatherJSON = [];
+
+        for (let h = 0; h < transformedHourlyAngles.length; h++) {
+            let transformedItem = transformedHourlyAngles[h];
+
+            let otherLocalTimeArr = transformedItem.otherLocalTime;
+            let otherLocalTime1;
+            let transformedItemChunk;
+
+            let needToBlend = otherLocalTimeArr.length !== 1;
+            if(!needToBlend) {
+                otherLocalTime1 = otherLocalTimeArr[0];
+                let percentage = otherLocalTime1 % 1;
+
+                // If transformed time refers to the previous day represent this previous day properly
+                if(otherLocalTime1 > 12 && h < 6) {
+                    otherLocalTime1 -= 24;
+                }
+
+                transformedItemChunk = this.transformWeatherItem(transformedItem, rawHourlyWeather, otherLocalTime1, percentage);
+            } else {
+                let percentage1 = otherLocalTimeArr[0] % 1;
+                let percentage2 = otherLocalTimeArr[1] % 1;
+
+                // If the second item refers to the previous day, represent this previous day properly
+                if(otherLocalTimeArr[1] && h < 6) {
+                    otherLocalTimeArr[1] -= 24;
+                }
+
+                let transformedItem1 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[0], percentage1);
+                let transformedItem2 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[1], percentage1);
+
+                transformedItemChunk = {
+                    temperature: (transformedItem1.temperature + transformedItem2.temperature)/2,
+                    cloudiness: (transformedItem1.cloudiness + transformedItem2.cloudiness)/2
+                };
+            }
+
+            if(!transformedItemChunk){
+                continue;
+            }
+
+            transformedItem.temperature = transformedItemChunk.temperature;
+            transformedItem.clouds = transformedItemChunk.cloudiness;
+
+            weatherJSON.push(transformedItem);
+        }
+
+        return weatherJSON;
+    }
+
+    transformWeatherItem(rawHourlyWeather, otherLocalTime, percentage) {
+        let utils = new Utils();
+
+        let earlierHour = Math.floor(otherLocalTime);
+        let laterHour = Math.ceil(otherLocalTime);
+
+        // TODO: Add case when otherSunAngle is greater than currentSunAngle and
+        // above values are NaN
+
+        let earlierRawItem = rawHourlyWeather[earlierHour];
+        let laterRawItem = rawHourlyWeather[laterHour];
+
+        // If the raw item is not available skip it and carry on
+        if(!earlierRawItem || !laterRawItem) {
+            if (earlierHour < 0) {
+                console.warn(`${earlierHour}h is needed`);
+            } else if (laterHour < 0) {
+                console.warn(`${laterHour}h is needed`);
+            }
+            return {temperature: undefined, cloudiness: undefined}
+        }
+
+        let temp1 = earlierRawItem.temperature;
+        let temp2 = laterRawItem.temperature;
+        let clouds1 = earlierRawItem.clouds;
+        let clouds2 = laterRawItem.clouds;
+        let temperature = utils.transition(temp1, temp2, 0, 1, percentage);
+        let cloudiness = utils.transition(clouds1, clouds2, 0, 1, percentage);
+
+        let transformedItemChunk = {temperature, cloudiness};
+
+        return transformedItemChunk;
+    }
 }
