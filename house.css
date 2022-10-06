@@ -124,3 +124,9 @@ h3, h5{
 #clock{
     font-size: 24pt;
 }
+
+@media only screen and (max-width: 992px){
+    #gradient{
+        display: none;
+    }
+}
