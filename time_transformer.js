@@ -49,7 +49,12 @@ class TimeTransformer {
 
     printHourlySunAngles() {
 
+        let { utc, coords } = JSON.parse(localStorage.getItem('locationData'));
+        let [latitude, longitude] = coords.split(",");
+        this.otherLocation = { utc, latitude, longitude };
+
         let hourlySunAngles = [];
+        let previousState, isMorning;
 
         for (let i = 0; i < 24; i++) {
 
@@ -57,17 +62,36 @@ class TimeTransformer {
             millis += (i - this.otherLocation.utc) * 1000 * 60 * 60;
 
             let date = new Date(millis);
+            let datePlus1Minute = new Date(millis + 1000 * 60);
+
             let sunAngle = sunAngleCalculator.getSunAngleFromTime(date.toISOString(), this.otherLocation);
+            let sunAngllePlus1Minute = sunAngleCalculator.getSunAngleFromTime(datePlus1Minute.toISOString(), this.otherLocation);
+            
+            previousState = isMorning;
+            isMorning = sunAngle < sunAngllePlus1Minute;
+
+            let itsNoonOrMidnight = (previousState !== isMorning && previousState !== undefined) || (previousState === undefined && isMorning);
+
             hourlySunAngles.push(sunAngle);
 
             let position = localStorage.getItem('coords').split(",");
             let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
             let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(sunAngle, currentLocation, new Date());
+
+            if(!itsNoonOrMidnight){ //TODO: Try with ternary operator
+                if(isMorning){
+                    otherLocalTime = otherLocalTime.slice(0, 1);
+                } else {
+                    otherLocalTime = otherLocalTime.slice(1);
+                }
+            }
+
             console.log(`//     { time: ${i},  temperature: t,  sunAngle: ${sunAngle.toFixed(1)},    clouds: c}, // ${this.formatLocalTime(otherLocalTime)}`);
         }
     }
 
     formatLocalTime(localTime) {
+        //
         let localTimeArr = localTime.map((rawLocalTime) => {
             let hour = Math.floor(rawLocalTime);
             let percentage = Math.round((rawLocalTime - hour) * 100);
@@ -78,7 +102,7 @@ class TimeTransformer {
     }
 
     getOtherTime() {
-        let position = localStorage.getItem('coords').split(',');
+        let position = localStorage.getItem('coords')?.split(',');
         let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
         let currentSunAngle = sunAngleCalculator.getSunAngleFromTime(new Date(), currentLocation);
         let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(currentSunAngle, this.otherLocation, otherDate);

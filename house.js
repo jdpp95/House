@@ -18,8 +18,9 @@ window.onload = () => {
     document.querySelector('#rainIntensity').value = weatherData.rainIntensity;
     document.querySelector('#visibility').value = weatherData.visibility;
     document.querySelector("#datetimepicker1").onchange = onDateChanged;
+    document.querySelector("#geolocation-button").onclick = onGeoLocationButtonClicked;
 
-    let utc, coords;
+    let utc, coords; //TODO: There is a destructuration statement in the other repo
     if (localStorage.getItem('locationData')) {
         let locationData = JSON.parse(localStorage.getItem('locationData'));
         utc = locationData.utc;
@@ -62,21 +63,21 @@ window.onload = () => {
 
     $('#datetimepicker1').datepicker('setUTCDate', new Date(localStorage.getItem('otherDate')));
     onDateChanged();
-
     onUpdateClicked();
+    let locationData = parseLocationData({coords, utc});
+    timeTransformer.updateTime(locationData);
+    var gradient = new Gradient();
+}
 
-    timeTransformer.getCurrentLocation((position) => {
-        localStorage.setItem('coords', `${position.coords.latitude},${position.coords.longitude}`);
-    });
-
+function parseLocationData(rawLocation){
+    let {coords, utc} = rawLocation;
+    
     let locationData = {};
     locationData.latitude = coords.split(",")[0];
     locationData.longitude = coords.split(",")[1];
     locationData.utc = utc;
 
-    timeTransformer.updateTime(locationData);
-
-    var gradient = new Gradient();
+    return locationData;
 }
 
 function onDateChanged() {
@@ -130,4 +131,11 @@ function onUpdateClicked() {
 
 function onTestClicked() {
     timeTransformer.printHourlySunAngles();
+}
+
+function onGeoLocationButtonClicked() {
+    timeTransformer.getCurrentLocation((position) => {
+        localStorage.setItem('coords', `${position.coords.latitude},${position.coords.longitude}`);
+        timeTransformer.updateTime(); // TODO: Pass locationData item
+    });
 }
