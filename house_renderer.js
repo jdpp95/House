@@ -62,18 +62,30 @@ class HouseRenderer {
     }
 
     colorSky({ temperature, sunAngle, cloudiness, rainIntensity, hasFog, visibility }) {
+        // Retrieve elements from DOM
         const sky = document.querySelector('#sky');
         const fog = document.querySelector('#fog');
+
+        // Constants
+        const MIN_FOG_BRIGHTNESS = 0.3, MAX_FOG_BRIGHTNESS = 1.45;
+        const MIN_GRAYSCALE = -0.5, MAX_GRAYSCALE = -1;
+        const DAYTIME_LUM_MAX = 80, DAYTIME_LUM = 50, NIGHTIME_LUM = 15;
 
         //Set stars if nightime
         this.drawStars(sunAngle);
 
         // Color sky and clouds
         const { hue, sat, lum } = this.colorTemperature.colorT(temperature, sunAngle, 0, rainIntensity);
-        const hsl = `hsl(${hue}, ${sat}%, ${lum}%)`;
+
+        let upperLuminosity = Math.min(Math.max(this.utils.transition(NIGHTIME_LUM, DAYTIME_LUM, -10, 0, sunAngle), NIGHTIME_LUM), DAYTIME_LUM);
+        let lowerLuminosity = Math.min(Math.max(this.utils.transition(NIGHTIME_LUM, DAYTIME_LUM_MAX, -12, 0, sunAngle), NIGHTIME_LUM), DAYTIME_LUM_MAX);
+        
+        // TODO: Saturation on low sun angles
+
+        const upperHsl = `hsl(${hue}, ${sat}%, ${upperLuminosity}%)`;
+        const lowerHsl = `hsl(${hue}, ${sat}%, ${lowerLuminosity}%)`;
+
         let brightness = 0;
-        const MIN_FOG_BRIGHTNESS = 0.3;
-        const MAX_FOG_BRIGHTNESS = 1.45;
 
         if (sunAngle >= 0) {
             brightness = MAX_FOG_BRIGHTNESS;
@@ -84,8 +96,6 @@ class HouseRenderer {
         }
 
         let grayscale = 0;
-        const MIN_GRAYSCALE = -0.5;
-        const MAX_GRAYSCALE = -1;
 
         if (rainIntensity > 1) {
             grayscale = this.utils.transition(MIN_GRAYSCALE, MAX_GRAYSCALE, 0, 3, Math.pow(rainIntensity, 1 / 2));
@@ -103,8 +113,12 @@ class HouseRenderer {
         fog.style.opacity = `${129 - 15.3 * Math.log(visibility)}%`
         fog.style.filter = `brightness(${brightness})`;
 
-        sky.style.backgroundColor = hsl;
-        console.log(`Sky: ${hsl}`);
+        // sky.style.backgroundColor = hsl;
+        
+        let skyGradientAngle = sunAngle >= 0? sunAngle * 2 : 0;
+        
+        sky.style.background = `linear-gradient(-${skyGradientAngle}deg, ${lowerHsl} 0%, ${upperHsl} 50%)`;
+        console.log(`Sky: ${upperHsl}`);
 
         // Set background image
         this.drawClouds(cloudiness, grayscale, hue, sunAngle);
