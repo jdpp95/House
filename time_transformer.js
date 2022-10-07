@@ -154,7 +154,7 @@ class TimeTransformer {
                     otherLocalTime1 -= 24;
                 }
 
-                transformedItemChunk = this.transformWeatherItem(transformedItem, rawHourlyWeather, otherLocalTime1, percentage);
+                transformedItemChunk = this.transformWeatherItem(rawHourlyWeather, otherLocalTime1, percentage);
             } else {
                 let percentage1 = otherLocalTimeArr[0] % 1;
                 let percentage2 = otherLocalTimeArr[1] % 1;
@@ -165,7 +165,7 @@ class TimeTransformer {
                 }
 
                 let transformedItem1 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[0], percentage1);
-                let transformedItem2 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[1], percentage1);
+                let transformedItem2 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[1], percentage2);
 
                 transformedItemChunk = {
                     temperature: (transformedItem1.temperature + transformedItem2.temperature)/2,
@@ -173,7 +173,7 @@ class TimeTransformer {
                 };
             }
 
-            if(!transformedItemChunk){
+            if(!transformedItemChunk || transformedItemChunk.temperature === undefined || isNaN(transformedItemChunk.temperature)){
                 continue;
             }
 
