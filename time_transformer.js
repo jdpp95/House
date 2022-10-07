@@ -48,7 +48,6 @@ class TimeTransformer {
     }
 
     computeHourlySunAngles() {
-
         let { utc, coords } = JSON.parse(localStorage.getItem('locationData'));
         let [latitude, longitude] = coords.split(",");
         this.otherLocation = { utc, latitude, longitude };
@@ -139,18 +138,19 @@ class TimeTransformer {
 
         for (let h = 0; h < transformedHourlyAngles.length; h++) {
             let transformedItem = transformedHourlyAngles[h];
+            let previousTransformedItem = weatherJSON[h - 1];
 
             let otherLocalTimeArr = transformedItem.otherLocalTime;
             let otherLocalTime1;
             let transformedItemChunk;
 
             let needToBlend = otherLocalTimeArr.length !== 1;
-            if(!needToBlend) {
+            if (!needToBlend) {
                 otherLocalTime1 = otherLocalTimeArr[0];
                 let percentage = otherLocalTime1 % 1;
 
                 // If transformed time refers to the previous day represent this previous day properly
-                if(otherLocalTime1 > 12 && h < 6) {
+                if (otherLocalTime1 > 12 && h < 6) {
                     otherLocalTime1 -= 24;
                 }
 
@@ -160,7 +160,7 @@ class TimeTransformer {
                 let percentage2 = otherLocalTimeArr[1] % 1;
 
                 // If the second item refers to the previous day, represent this previous day properly
-                if(otherLocalTimeArr[1] && h < 6) {
+                if (otherLocalTimeArr[1] && h < 6) {
                     otherLocalTimeArr[1] -= 24;
                 }
 
@@ -168,17 +168,31 @@ class TimeTransformer {
                 let transformedItem2 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[1], percentage2);
 
                 transformedItemChunk = {
-                    temperature: (transformedItem1.temperature + transformedItem2.temperature)/2,
-                    cloudiness: (transformedItem1.cloudiness + transformedItem2.cloudiness)/2
+                    temperature: (transformedItem1.temperature + transformedItem2.temperature) / 2,
+                    cloudiness: (transformedItem1.cloudiness + transformedItem2.cloudiness) / 2
                 };
             }
 
-            if(!transformedItemChunk || transformedItemChunk.temperature === undefined || isNaN(transformedItemChunk.temperature)){
+            if (!transformedItemChunk || transformedItemChunk.temperature === undefined || isNaN(transformedItemChunk.temperature)) {
                 continue;
             }
 
             transformedItem.temperature = transformedItemChunk.temperature;
             transformedItem.clouds = transformedItemChunk.cloudiness;
+
+
+            if (previousTransformedItem) {
+                let computeIndoorTempDelta = (currentOutdoorTemperature, previousIndoorTemperature, kPlus, kMinus) => {
+                    return currentOutdoorTemperature + (previousIndoorTemperature - currentOutdoorTemperature) * Math.exp(currentOutdoorTemperature - previousIndoorTemperature < 0 ? -kPlus : -kMinus);
+                }
+
+                transformedItem.floor1 = computeIndoorTempDelta(transformedItem.temperature, previousTransformedItem.floor1, 0.07, 0.45); //1st floor
+                transformedItem.floor3 = computeIndoorTempDelta(transformedItem.temperature, previousTransformedItem.floor3, 0.015, 0.15); //3rd floor
+            } else {
+                transformedItem.floor1 = rawHourlyWeather.indoorTemp.floor1;
+                transformedItem.floor3 = rawHourlyWeather.indoorTemp.floor3;
+            }
+
 
             weatherJSON.push(transformedItem);
         }
@@ -199,13 +213,13 @@ class TimeTransformer {
         let laterRawItem = rawHourlyWeather[laterHour];
 
         // If the raw item is not available skip it and carry on
-        if(!earlierRawItem || !laterRawItem) {
+        if (!earlierRawItem || !laterRawItem) {
             if (earlierHour < 0) {
                 console.warn(`${earlierHour}h is needed`);
             } else if (laterHour < 0) {
                 console.warn(`${laterHour}h is needed`);
             }
-            return {temperature: undefined, cloudiness: undefined}
+            return { temperature: undefined, cloudiness: undefined }
         }
 
         let temp1 = earlierRawItem.temperature;
@@ -215,7 +229,7 @@ class TimeTransformer {
         let temperature = utils.transition(temp1, temp2, 0, 1, percentage);
         let cloudiness = utils.transition(clouds1, clouds2, 0, 1, percentage);
 
-        let transformedItemChunk = {temperature, cloudiness};
+        let transformedItemChunk = { temperature, cloudiness };
 
         return transformedItemChunk;
     }

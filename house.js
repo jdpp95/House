@@ -160,6 +160,9 @@ function onTestClicked() {
         document.querySelector("#rainIntensityControl").style.display = 'none';
         document.querySelector("#cloudCoverControl").style.display = 'flex';
     }
+
+    indoorTemperature1Element.value = lastItem.floor1.toFixed(1);
+    indoorTemperature2Element.value = lastItem.floor3.toFixed(1);
 }
 
 function onGeoLocationButtonClicked() {

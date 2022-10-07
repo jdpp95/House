@@ -38,10 +38,7 @@ class Gradient {
         ];
 
         let transformedHourlyWeather = timeTransformer.transformWeatherJSON(rawHourlyWeather);
-        console.log(transformedHourlyWeather);
-
-
-
+        console.table(transformedHourlyWeather);
 
         this.setGradientColors(transformedHourlyWeather);
 
