@@ -1,5 +1,6 @@
 const sunAngleCalculator = new SunAngleCalculator();
 const timeTransformer = new TimeTransformer();
+let gradient;
 
 $(document).ready(() => {
     $('#datetimepicker1').datepicker({
@@ -20,12 +21,8 @@ window.onload = () => {
     document.querySelector("#datetimepicker1").onchange = onDateChanged;
     document.querySelector("#geolocation-button").onclick = onGeoLocationButtonClicked;
 
-    let utc, coords; //TODO: There is a destructuration statement in the other repo
-    if (localStorage.getItem('locationData')) {
-        let locationData = JSON.parse(localStorage.getItem('locationData'));
-        utc = locationData.utc;
-        coords = locationData.coords;
-    }
+    let { utc, coords } = JSON.parse(localStorage.getItem('locationData'));
+
     let coordsInput = document.querySelector('#coords');
     coordsInput.value = coords;
     coordsInput.onchange = updateLocationData;
@@ -64,14 +61,14 @@ window.onload = () => {
     $('#datetimepicker1').datepicker('setUTCDate', new Date(localStorage.getItem('otherDate')));
     onDateChanged();
     onUpdateClicked();
-    let locationData = parseLocationData({coords, utc});
+    let locationData = parseLocationData({ coords, utc });
     timeTransformer.updateTime(locationData);
-    var gradient = new Gradient(timeTransformer);
+    gradient = new Gradient(timeTransformer);
 }
 
-function parseLocationData(rawLocation){
-    let {coords, utc} = rawLocation;
-    
+function parseLocationData(rawLocation) {
+    let { coords, utc } = rawLocation;
+
     let locationData = {};
     locationData.latitude = coords.split(",")[0];
     locationData.longitude = coords.split(",")[1];
@@ -86,7 +83,6 @@ function onDateChanged() {
 }
 
 function updateLocationData() {
-    console.log("updateLocationData()");
     let coordsInput = document.querySelector("#coords");
     let utcInput = document.querySelector("#utc");
 
@@ -130,7 +126,40 @@ function onUpdateClicked() {
 }
 
 function onTestClicked() {
-    timeTransformer.computeHourlySunAngles();
+    let outdoorTemperatureElement = document.querySelector("#outdoorTemperature");
+    let indoorTemperature1Element = document.querySelector("#indoorTemperature1");
+    let indoorTemperature2Element = document.querySelector("#indoorTemperature2");
+    let sunAngleElement = document.querySelector("#sunAngle");
+    let cloudCoverElement = document.querySelector("#cloudCover");
+    let rainIntensityElement = document.querySelector("#rainIntensity");
+    let hasFogElement = document.querySelector("#hasFog");
+    let visibilityElement = document.querySelector("#visibility");
+    let isRainingElement = document.querySelector("#isRainingCheckbox");
+
+    let gradientData = gradient.getGradientData();
+
+    let lastIndex = gradientData.length - 1;
+    let lastItem = gradientData[lastIndex];
+
+    console.log(lastItem);
+
+    sunAngleElement.value = lastItem.sunAngle.toFixed(1);
+    outdoorTemperatureElement.value = lastItem.temperature.toFixed(1);
+    cloudCoverElement.value = (lastItem.clouds * 100).toFixed(0);
+
+    let rainIntensity = 0;
+
+    if(lastItem.clouds > 1) {
+        rainIntensity = lastItem.clouds - 1;
+        isRainingElement.checked = true;
+        document.querySelector("#rainIntensityControl").style.display = 'flex';
+        rainIntensityElement.value = Math.pow(rainIntensity - 1, 3);
+        document.querySelector("#cloudCoverControl").style.display = 'none';
+    } else {
+        isRainingElement.checked = false;
+        document.querySelector("#rainIntensityControl").style.display = 'none';
+        document.querySelector("#cloudCoverControl").style.display = 'flex';
+    }
 }
 
 function onGeoLocationButtonClicked() {

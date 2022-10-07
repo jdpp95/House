@@ -80,7 +80,7 @@ class ColorTemperature {
         if(cloudiness >= 0 && cloudiness <= 0.125){
             weatherConditions = "Clear";
         } else if (cloudiness >= 0.125 && cloudiness <= 0.375) {
-            weatherConditions = "Mostly clear";
+            weatherConditions = "Fair";
         } else if (cloudiness >= 0.375 && cloudiness <= 0.5) {
             weatherConditions = "Partly clear";
         } else if (cloudiness >= 0.5 && cloudiness <= 0.625) {

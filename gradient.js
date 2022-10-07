@@ -1,14 +1,19 @@
 class Gradient {
 
     timeTransformer;
+    gradientData;
     GRADIENT_TIME = 0;
 
     constructor(timeTransformer) {
         this.timeTransformer = timeTransformer;
 
         let rawHourlyWeather = [
+            { time: "-6", temperature: -0.5, clouds: 1 },
+            { time: "-5", temperature: -1, clouds: 1 },
+            { time: "-4", temperature: -1, clouds: 0.5 },
             { time: "-3", temperature: -1, clouds: 1 },
             { time: "-2", temperature: -1, clouds: 1 },
+            { time: "-1", temperature: -1, clouds: 1 },
             { time: 0, temperature: -2, clouds: 0.75 },
             { time: 1, temperature: -3, clouds: 1.25 },
             { time: 2, temperature: -3, clouds: 1 },
@@ -74,7 +79,7 @@ class Gradient {
         let style = "";
         let colorTemperature = new ColorTemperature();
 
-        weatherData = weatherData.filter((item) => item.time <= this.GRADIENT_TIME);
+        this.gradientData = weatherData = weatherData.filter((item) => item.time <= this.GRADIENT_TIME);
 
         if (weatherData.length == 1) {
             let { hue, sat, lum } = colorTemperature.colorT(weatherData[0]['temperature'], weatherData[0]['sunAngle'], weatherData[0]['clouds'], weatherData[0]['rain']);
@@ -122,5 +127,9 @@ class Gradient {
         }
 
         tempGradient.style.background = style;
+    }
+
+    getGradientData() {
+        return this.gradientData;
     }
 }
