@@ -156,7 +156,7 @@ function onTestClicked() {
         rainIntensity = lastItem.clouds - 1;
         isRainingElement.checked = true;
         document.querySelector("#rainIntensityControl").style.display = 'flex';
-        rainIntensityElement.value = Math.pow(rainIntensity + 1, 3);
+        rainIntensityElement.value = Math.pow(rainIntensity + 1, 3).toFixed(1);
         document.querySelector("#cloudCoverControl").style.display = 'none';
     } else {
         isRainingElement.checked = false;

@@ -195,17 +195,17 @@ class TimeTransformer {
                 transformedItem.floor3 = rawHourlyWeather.indoorTemp.floor3;
             }
 
-            heatingIsOn = h >=8 && h <= 18;
+            heatingIsOn = h >= 8 && h <= 18;
             //Heating
-            if(heatingIsOn){
+            if (heatingIsOn) {
                 const HEATING_MIN = 15;
                 const HEATING_MAX = 21;
 
-                if(transformedItem.floor1 < HEATING_MIN) {
+                if (transformedItem.floor1 < HEATING_MIN) {
                     transformedItem.floor1 = HEATING_MAX;
                 }
 
-                if(transformedItem.floor3 < HEATING_MIN) {
+                if (transformedItem.floor3 < HEATING_MIN) {
                     transformedItem.floor3 = HEATING_MAX;
                 }
             }

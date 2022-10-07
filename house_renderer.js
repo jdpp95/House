@@ -27,8 +27,8 @@ class HouseRenderer {
             case 1:
             case 4:
                 if (hasHeating) {
-                    floor1.style.backgroundColor = backgroundString;
-                    floor4.style.backgroundColor = backgroundString;
+                    floor1.style.background = backgroundString;
+                    floor4.style.background = backgroundString;
                 } else {
                     floor1.style.background = "";
                     floor4.style.background = "";
@@ -40,8 +40,8 @@ class HouseRenderer {
             case 2:
             case 3:
                 if (hasHeating) {
-                    floor2.style.backgroundColor = backgroundString;
-                    floor3.style.backgroundColor = backgroundString;
+                    floor2.style.background = backgroundString;
+                    floor3.style.background = backgroundString;
                 } else {
                     floor2.style.background = "";
                     floor3.style.background = "";
