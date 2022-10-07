@@ -104,6 +104,7 @@ function onUpdateClicked() {
     let rainIntensity = document.querySelector('#rainIntensity').value;
     let hasFog = document.querySelector("#hasFog").checked;
     let visibility = document.querySelector("#visibility").value;
+    let hasHeating = document.querySelector("#hasHeating").checked;
 
     let isRaining = document.querySelector('#isRainingCheckbox').checked;
     if (isRaining) {
@@ -115,8 +116,8 @@ function onUpdateClicked() {
     const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility };
     localStorage.setItem('weatherData', JSON.stringify(weatherData));
 
-    houseRenderer.colorHouse({ temperature: indoorTemperature2, floor: 3 });
-    houseRenderer.colorHouse({ temperature: indoorTemperature1, floor: 1 });
+    houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature2, floor: 3, hasHeating });
+    houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature1, floor: 1, hasHeating });
     
     document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + 2.8).toFixed(1) + "°C";
     document.getElementById("window-2").innerHTML = (indoorTemperature2 * 1 + 2.8).toFixed(1) + "°C";
@@ -134,6 +135,7 @@ function onTestClicked() {
     let cloudCoverElement = document.querySelector("#cloudCover");
     let rainIntensityElement = document.querySelector("#rainIntensity");
     let hasFogElement = document.querySelector("#hasFog");
+    let hasHeatingElement = document.querySelector("#hasHeating");
     let visibilityElement = document.querySelector("#visibility");
     let isRainingElement = document.querySelector("#isRainingCheckbox");
 
@@ -161,6 +163,8 @@ function onTestClicked() {
         document.querySelector("#rainIntensityControl").style.display = 'none';
         document.querySelector("#cloudCoverControl").style.display = 'flex';
     }
+
+    hasHeatingElement.checked = lastItem.hasHeating;
 
     indoorTemperature1Element.value = lastItem.floor1.toFixed(1);
     indoorTemperature2Element.value = lastItem.floor3.toFixed(1);

@@ -209,6 +209,7 @@ class TimeTransformer {
                     transformedItem.floor3 = HEATING_MAX;
                 }
             }
+            transformedItem.hasHeating = heatingIsOn;
 
             weatherJSON.push(transformedItem);
         }

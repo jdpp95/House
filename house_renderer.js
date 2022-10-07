@@ -7,27 +7,58 @@ class HouseRenderer {
         this.canvas = fx.canvas();
     }
 
-    colorHouse({ temperature, floor }) {
+    colorHouse({ outsideTemperature, temperature, floor, hasHeating }) {
         const floor1 = document.querySelector('#floor-1');
         const floor2 = document.querySelector('#floor-2');
         const floor3 = document.querySelector('#floor-3');
         const floor4 = document.querySelector('#floor-4');
 
-        const { hue, sat, lum } = this.colorTemperature.colorT(temperature, 0, 0.5);
-        const hsl = `hsl(${hue}, ${sat}%, ${lum}%)`;
+        const roomTempHSL = this.colorTemperature.colorT(temperature, 0, 0.5);
+        const middleHSL = this.colorTemperature.colorT((temperature * 1 + outsideTemperature * 1) / 2, 0, 0.5);
+        const heatingTempHSL = this.colorTemperature.colorT(temperature * 1 + (temperature - outsideTemperature), 0, 0.5);
+
+        const roomTempHslString = this.hslStringify(roomTempHSL);
+        const middleHSLString = this.hslStringify(middleHSL);
+        const heatingTempHSLString = this.hslStringify(heatingTempHSL);
+
+        let backgroundString = this.heatingGradientStringify(roomTempHslString, middleHSLString, heatingTempHSLString);
 
         switch (floor) {
             case 1:
             case 4:
-                floor1.style.backgroundColor = hsl;
-                floor4.style.backgroundColor = hsl;
+                if (hasHeating) {
+                    floor1.style.backgroundColor = backgroundString;
+                    floor4.style.backgroundColor = backgroundString;
+                } else {
+                    floor1.style.background = "";
+                    floor4.style.background = "";
+
+                    floor1.style.backgroundColor = roomTempHslString;
+                    floor4.style.backgroundColor = roomTempHslString;
+                }
                 break;
             case 2:
             case 3:
-                floor2.style.backgroundColor = hsl;
-                floor3.style.backgroundColor = hsl;
+                if (hasHeating) {
+                    floor2.style.backgroundColor = backgroundString;
+                    floor3.style.backgroundColor = backgroundString;
+                } else {
+                    floor2.style.background = "";
+                    floor3.style.background = "";
+
+                    floor2.style.backgroundColor = roomTempHslString;
+                    floor3.style.backgroundColor = roomTempHslString;
+                }
                 break;
         }
+    }
+
+    heatingGradientStringify(roomTempHslString, middleHSLString, heatingTempHSLString) {
+        return `linear-gradient(180deg, ${middleHSLString} 0%, ${roomTempHslString} 20%, ${roomTempHslString} 95%, ${heatingTempHSLString} 100%)`;
+    }
+
+    hslStringify(hsl) {
+        return `hsl(${hsl.hue}, ${hsl.sat}%, ${hsl.lum}%)`;
     }
 
     colorSky({ temperature, sunAngle, cloudiness, rainIntensity, hasFog, visibility }) {
