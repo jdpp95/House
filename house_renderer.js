@@ -73,6 +73,7 @@ class HouseRenderer {
         fog.style.filter = `brightness(${brightness})`;
 
         sky.style.backgroundColor = hsl;
+        console.log(`Sky: ${hsl}`);
 
         // Set background image
         this.drawClouds(cloudiness, grayscale, hue, sunAngle);

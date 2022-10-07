@@ -40,8 +40,8 @@ class Gradient {
 
         this.setGradientColors(transformedHourlyWeather);
 
-        // { time: "-3", temperature: t,  clouds: c },
-        // { time: "-2", temperature: t,  clouds: c },
+        // { time: "-", temperature: t,  clouds: c },
+        // { time: "-", temperature: t,  clouds: c },
         // { time: 0,    temperature: t,  clouds: c },
         // { time: 1,    temperature: t,  clouds: c },
         // { time: 2,    temperature: t,  clouds: c },
@@ -103,13 +103,22 @@ class Gradient {
         }
 
         let index = weatherData.length - 1;
-        const lastItem = weatherData[index];
-        if (lastItem) {
-            console.log(colorTemperature.colorT(lastItem.temperature, lastItem.sunAngle, lastItem.clouds, lastItem.rain));
+
+        const itemAt18 = weatherData[18];
+        const last = weatherData[index];
+
+        if(itemAt18) {
+            console.log(colorTemperature.colorT(itemAt18.temperature, itemAt18.sunAngle, itemAt18.clouds, itemAt18.rain));
+        }
+
+        if (last) {
             let gradientText = "";
-            gradientText += `${lastItem.time}:00 ${(lastItem.temperature * 1.8 + 32).toFixed(0)} °F \n`;
-            gradientText += colorTemperature.weatherToString(lastItem.temperature, lastItem.clouds);
-            gradientTextElement.innerText = gradientText;
+            gradientText += `${last.time}:00 ${(last.temperature * 1.8 + 32).toFixed(0)} °F \n`;
+            gradientText += colorTemperature.weatherToString(last.temperature, last.clouds);
+
+            if(this.GRADIENT_TIME < 24){
+                gradientTextElement.innerText = gradientText;
+            }
         }
 
         tempGradient.style.background = style;
