@@ -117,12 +117,13 @@ function onUpdateClicked() {
 
     houseRenderer.colorHouse({ temperature: indoorTemperature2, floor: 3 });
     houseRenderer.colorHouse({ temperature: indoorTemperature1, floor: 1 });
-    houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
-
+    
     document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + 2.8).toFixed(1) + "°C";
     document.getElementById("window-2").innerHTML = (indoorTemperature2 * 1 + 2.8).toFixed(1) + "°C";
     document.getElementById("window-3").innerHTML = (indoorTemperature2 * 1 + 2.8).toFixed(1) + "°C";
     document.getElementById("window-4").innerHTML = (indoorTemperature1 * 1 + 2.8).toFixed(1) + "°C";
+
+    houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
 }
 
 function onTestClicked() {
@@ -153,7 +154,7 @@ function onTestClicked() {
         rainIntensity = lastItem.clouds - 1;
         isRainingElement.checked = true;
         document.querySelector("#rainIntensityControl").style.display = 'flex';
-        rainIntensityElement.value = Math.pow(rainIntensity - 1, 3);
+        rainIntensityElement.value = Math.pow(rainIntensity + 1, 3);
         document.querySelector("#cloudCoverControl").style.display = 'none';
     } else {
         isRainingElement.checked = false;

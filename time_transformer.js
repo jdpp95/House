@@ -136,6 +136,8 @@ class TimeTransformer {
         let transformedHourlyAngles = this.computeHourlySunAngles();
         let weatherJSON = [];
 
+        let heatingIsOn = true;
+
         for (let h = 0; h < transformedHourlyAngles.length; h++) {
             let transformedItem = transformedHourlyAngles[h];
             let previousTransformedItem = weatherJSON[h - 1];
@@ -180,7 +182,7 @@ class TimeTransformer {
             transformedItem.temperature = transformedItemChunk.temperature;
             transformedItem.clouds = transformedItemChunk.cloudiness;
 
-
+            // Compute indoor temperature
             if (previousTransformedItem) {
                 let computeIndoorTempDelta = (currentOutdoorTemperature, previousIndoorTemperature, kPlus, kMinus) => {
                     return currentOutdoorTemperature + (previousIndoorTemperature - currentOutdoorTemperature) * Math.exp(currentOutdoorTemperature - previousIndoorTemperature < 0 ? -kPlus : -kMinus);
@@ -193,6 +195,20 @@ class TimeTransformer {
                 transformedItem.floor3 = rawHourlyWeather.indoorTemp.floor3;
             }
 
+            heatingIsOn = h >=8 && h <= 18;
+            //Heating
+            if(heatingIsOn){
+                const HEATING_MIN = 15;
+                const HEATING_MAX = 21;
+
+                if(transformedItem.floor1 < HEATING_MIN) {
+                    transformedItem.floor1 = HEATING_MAX;
+                }
+
+                if(transformedItem.floor3 < HEATING_MIN) {
+                    transformedItem.floor3 = HEATING_MAX;
+                }
+            }
 
             weatherJSON.push(transformedItem);
         }
@@ -214,9 +230,9 @@ class TimeTransformer {
 
         // If the raw item is not available skip it and carry on
         if (!earlierRawItem || !laterRawItem) {
-            if (earlierHour < 0) {
+            if (!earlierRawItem) {
                 console.warn(`${earlierHour}h is needed`);
-            } else if (laterHour < 0) {
+            } else if (!laterRawItem) {
                 console.warn(`${laterHour}h is needed`);
             }
             return { temperature: undefined, cloudiness: undefined }
