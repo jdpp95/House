@@ -21,15 +21,16 @@ window.onload = () => {
     document.querySelector("#datetimepicker1").onchange = onDateChanged;
     document.querySelector("#geolocation-button").onclick = onGeoLocationButtonClicked;
 
-    let { utc, coords } = JSON.parse(localStorage.getItem('locationData'));
-
+    
     let coordsInput = document.querySelector('#coords');
-    coordsInput.value = coords;
     coordsInput.onchange = updateLocationData;
-
+    
     let utcInput = document.querySelector('#utc');
-    utcInput.value = utc;
     utcInput.onchange = updateLocationData;
+    
+    let { utc, coords } = JSON.parse(localStorage.getItem('locationData'));
+    coordsInput.value = coords;
+    utcInput.value = utc;
 
     let isRainingCheckbox = document.querySelector('#isRainingCheckbox');
 
@@ -173,6 +174,11 @@ function onTestClicked() {
 function onGeoLocationButtonClicked() {
     timeTransformer.getCurrentLocation((position) => {
         localStorage.setItem('coords', `${position.coords.latitude},${position.coords.longitude}`);
-        timeTransformer.updateTime(); // TODO: Pass locationData item
+        let locationData = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            utc: -5 //TODO: Hardcoded UTC
+        };
+        timeTransformer.updateTime(locationData);
     });
 }
