@@ -119,11 +119,13 @@ function onUpdateClicked() {
 
     houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature2, floor: 3, hasHeating });
     houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature1, floor: 1, hasHeating });
+
+    const THERMOMETHER_DIFF = 1.5;
     
-    document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + 2.8).toFixed(1) + "°C";
-    document.getElementById("window-2").innerHTML = (indoorTemperature2 * 1 + 2.8).toFixed(1) + "°C";
-    document.getElementById("window-3").innerHTML = (indoorTemperature2 * 1 + 2.8).toFixed(1) + "°C";
-    document.getElementById("window-4").innerHTML = (indoorTemperature1 * 1 + 2.8).toFixed(1) + "°C";
+    document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
+    document.getElementById("window-2").innerHTML =          (indoorTemperature2 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
+    document.getElementById("window-3").innerHTML =          (indoorTemperature2 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
+    document.getElementById("window-4").innerHTML =          (indoorTemperature1 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
 
     houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
 }
