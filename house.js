@@ -122,6 +122,7 @@ function onUpdateClicked() {
 
     const THERMOMETHER_DIFF = 1.5;
     
+    document.getElementById("thermometer-display").innerHTML = (Number(outdoorTemperature) + THERMOMETHER_DIFF).toFixed(1) + "°C";
     document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
     document.getElementById("window-2").innerHTML =          (indoorTemperature2 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
     document.getElementById("window-3").innerHTML =          (indoorTemperature2 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
