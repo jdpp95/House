@@ -120,7 +120,6 @@ class HouseRenderer {
         let skyGradientAngle = sunAngle >= 0? sunAngle * 2 : 0;
         
         sky.style.background = `linear-gradient(-${skyGradientAngle}deg, ${lowerHsl} 0%, ${upperHsl} 50%)`;
-        console.log(`Sky: ${upperHsl}`);
 
         // Set background image
         this.drawClouds(cloudiness, grayscale, hue, sunAngle);
@@ -144,16 +143,27 @@ class HouseRenderer {
         const MIN_CSS_BRIGHTNESS = 0.3;
         const MAX_CSS_BRIGHTNESS = 1 + 0.35 * (3 / 7);
 
+        console.log(`Hue: ${hue}`);
+
+        let max_css_brightness = 1 + 0.35 * (3 / 7);
+        if (hue < 60) {
+            max_css_brightness = 1.35;
+        } else if (hue > 120) {
+            max_css_brightness = 1.15;
+        } else {
+            max_css_brightness = this.utils.transition(1.15, 1.35, 120, 60, hue);
+        }
+
         let cloudBrightness, cssBrightness;
         if (sunAngle >= 0) {
             cloudBrightness = MAX_CLOUD_BRIGHTNESS;
-            cssBrightness = MAX_CSS_BRIGHTNESS;
+            cssBrightness = max_css_brightness;
         } else if (sunAngle <= -12) {
             cloudBrightness = MAX_CLOUD_BRIGHTNESS;
             cssBrightness = MIN_CSS_BRIGHTNESS;
         } else {
             cloudBrightness = this.utils.transition(MIN_CLOUD_BRIGHTNESS, MAX_CLOUD_BRIGHTNESS, -12, 0, sunAngle);
-            cssBrightness = this.utils.transition(MIN_CSS_BRIGHTNESS, MAX_CSS_BRIGHTNESS, -12, 0, sunAngle);
+            cssBrightness = this.utils.transition(MIN_CSS_BRIGHTNESS, max_css_brightness, -12, 0, sunAngle);
         }
 
         //Convert hue to API's value
