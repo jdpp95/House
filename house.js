@@ -98,24 +98,27 @@ function updateLocationData() {
 }
 
 function onUpdateClicked() {
-    let houseRenderer = new HouseRenderer();
+    const houseRenderer = new HouseRenderer();
 
-    let outdoorTemperature = document.querySelector('#outdoorTemperature').value;
-    let indoorTemperature1 = document.querySelector('#indoorTemperature1').value;
-    let indoorTemperature2 = document.querySelector('#indoorTemperature2').value;
-    let sunAngle = document.querySelector('#sunAngle').value;
+    const outdoorTemperature = document.querySelector('#outdoorTemperature').value;
+    const indoorTemperature1 = document.querySelector('#indoorTemperature1').value;
+    const indoorTemperature2 = document.querySelector('#indoorTemperature2').value;
+    const sunAngle = document.querySelector('#sunAngle').value;
+    const humidity = document.querySelector('#humidity').value;
     let cloudCover = document.querySelector('#cloudCover').value;
     let rainIntensity = document.querySelector('#rainIntensity').value;
-    let hasFog = document.querySelector("#hasFog").checked;
-    let visibility = document.querySelector("#visibility").value;
-    let hasHeating = document.querySelector("#hasHeating").checked;
+    const hasFog = document.querySelector("#hasFog").checked;
+    const visibility = document.querySelector("#visibility").value;
+    const hasHeating = document.querySelector("#hasHeating").checked;
 
-    let isRaining = document.querySelector('#isRainingCheckbox').checked;
+    const isRaining = document.querySelector('#isRainingCheckbox').checked;
     if (isRaining) {
         cloudCover = 100;
     } else {
         rainIntensity = 0;
     }
+
+    // TODO: Get humidity from somewhere
 
     const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility, isRaining, hasHeating };
     localStorage.setItem('weatherData', JSON.stringify(weatherData));
@@ -134,17 +137,18 @@ function onUpdateClicked() {
     houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
 }
 
-function onTestClicked() {
-    let outdoorTemperatureElement = document.querySelector("#outdoorTemperature");
-    let indoorTemperature1Element = document.querySelector("#indoorTemperature1");
-    let indoorTemperature2Element = document.querySelector("#indoorTemperature2");
-    let sunAngleElement = document.querySelector("#sunAngle");
-    let cloudCoverElement = document.querySelector("#cloudCover");
-    let rainIntensityElement = document.querySelector("#rainIntensity");
-    let hasFogElement = document.querySelector("#hasFog");
-    let hasHeatingElement = document.querySelector("#hasHeating");
-    let visibilityElement = document.querySelector("#visibility");
-    let isRainingElement = document.querySelector("#isRainingCheckbox");
+function onGradientDataClicked() {
+    const outdoorTemperatureElement = document.querySelector("#outdoorTemperature");
+    const indoorTemperature1Element = document.querySelector("#indoorTemperature1");
+    const indoorTemperature2Element = document.querySelector("#indoorTemperature2");
+    const humidityElement = document.querySelector("#humidity");
+    const sunAngleElement = document.querySelector("#sunAngle");
+    const cloudCoverElement = document.querySelector("#cloudCover");
+    const rainIntensityElement = document.querySelector("#rainIntensity");
+    const hasFogElement = document.querySelector("#hasFog");
+    const hasHeatingElement = document.querySelector("#hasHeating");
+    const visibilityElement = document.querySelector("#visibility");
+    const isRainingElement = document.querySelector("#isRainingCheckbox");
 
     let gradientData = gradient.getGradientData();
 
@@ -152,6 +156,7 @@ function onTestClicked() {
     let lastItem = gradientData[lastIndex];
 
     sunAngleElement.value = lastItem.sunAngle.toFixed(1);
+    humidityElement.value = (lastItem.humidity * 100).toFixed(0);
     outdoorTemperatureElement.value = lastItem.temperature.toFixed(1);
     cloudCoverElement.value = (lastItem.clouds * 100).toFixed(0);
 

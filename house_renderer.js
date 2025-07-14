@@ -63,7 +63,7 @@ class HouseRenderer {
         return `hsl(${hsl.hue}, ${hsl.sat}%, ${hsl.lum}%)`;
     }
 
-    colorSky({ temperature, sunAngle, cloudiness, rainIntensity, hasFog, visibility }) {
+    colorSky({ temperature, sunAngle, cloudiness, rainIntensity, hasFog, visibility, humidity }) {
         // Retrieve elements from DOM
         const sky = document.querySelector('#sky');
         const fog = document.querySelector('#fog');
@@ -105,7 +105,7 @@ class HouseRenderer {
             grayscale = MIN_GRAYSCALE;
         }
 
-        //Set fog
+        // Set fog
         if (!hasFog) {
             visibility = 5000;
         } else if (visibility == 0) {
@@ -241,5 +241,12 @@ class HouseRenderer {
         }
 
         return closestPercentage;
+    }
+
+    computeVisibility(humidity, temperature) {
+        const tempInF = this.utils.cToF(temperature);
+        humidity = humidity / 100;
+
+        return 10000;
     }
 }

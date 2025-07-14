@@ -188,7 +188,8 @@ class TimeTransformer {
 
                 transformedItemChunk = {
                     temperature: (transformedItem1.temperature + transformedItem2.temperature) / 2,
-                    cloudiness: (transformedItem1.cloudiness + transformedItem2.cloudiness) / 2
+                    cloudiness: (transformedItem1.cloudiness + transformedItem2.cloudiness) / 2,
+                    humidity: (transformedItem1.humidity + transformedItem2.humidity) / 2
                 };
             }
 
@@ -207,10 +208,10 @@ class TimeTransformer {
             }
 
             transformedItem.clouds = transformedItemChunk.cloudiness;
-
+            transformedItem.humidity = transformedItemChunk.humidity;
 
             if (greatestDiff < hourlyTemperatureDiff) {
-                if (h <= 12) {
+                if (h <= 11) {
                     greatestDiff = hourlyTemperatureDiff;
                 } else {
                     transformedItem.temperature = previousTemperature + greatestDiff;
@@ -249,7 +250,7 @@ class TimeTransformer {
                     transformedItem.hasHeating = true;
                 }
 
-                const AC_MIN = 19;
+                const AC_MIN = 15;
                 const AC_MAX = 22;
                 if (transformedItem.floor1 > AC_MAX) {
                     transformedItem.floor1 = (AC_MIN + transformedItem.floor1) / 2;
@@ -268,13 +269,10 @@ class TimeTransformer {
     }
 
     transformWeatherItem(rawHourlyWeather, otherLocalTime, percentage, angleOverflow) {
-        let utils = new Utils();
+        const utils = new Utils();
 
-        let earlierHour = Math.floor(otherLocalTime);
-        let laterHour = Math.ceil(otherLocalTime);
-
-        // TODO: Add case when otherSunAngle is greater than currentSunAngle and
-        // above values are NaN
+        const earlierHour = Math.floor(otherLocalTime);
+        const laterHour = Math.ceil(otherLocalTime);
 
         let earlierRawItem = rawHourlyWeather[earlierHour];
         let laterRawItem = rawHourlyWeather[laterHour];
@@ -289,18 +287,19 @@ class TimeTransformer {
             return { temperature: undefined, cloudiness: undefined }
         }
 
-        let temp1 = earlierRawItem.temperature;
-        let temp2 = laterRawItem.temperature;
-        let clouds1 = earlierRawItem.clouds;
-        let clouds2 = laterRawItem.clouds;
+        const temp1 = earlierRawItem.temperature;
+        const temp2 = laterRawItem.temperature;
+        const clouds1 = earlierRawItem.clouds;
+        const clouds2 = laterRawItem.clouds;
         let temperature = utils.transition(temp1, temp2, 0, 1, percentage);
-        let cloudiness = utils.transition(clouds1, clouds2, 0, 1, percentage);
+        const cloudiness = utils.transition(clouds1, clouds2, 0, 1, percentage);
+        const humidity = utils.transition(humidity1, humidity2, 0, 1, percentage);
 
         if (angleOverflow) {
             temperature += angleOverflow * 0.1;
         }
 
-        let transformedItemChunk = { temperature, cloudiness };
+        const transformedItemChunk = { temperature, cloudiness, humidity };
 
         return transformedItemChunk;
     }

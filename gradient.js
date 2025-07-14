@@ -4,6 +4,9 @@ class Gradient {
     gradientData;
     GRADIENT_TIME = 16;
 
+    // Min: - °C
+    // Max: - °C
+
     constructor(timeTransformer) {
         this.timeTransformer = timeTransformer;
 
@@ -21,32 +24,35 @@ class Gradient {
 
         this.setGradientColors(transformedHourlyWeather);
 
-        // "-" { temperature: t,  clouds: c },
-        // "-" { temperature: t,  clouds: c },
-        // 0:   { temperature: t,  clouds: c },
-        // 1:   { temperature: t,  clouds: c },
-        // 2:   { temperature: t,  clouds: c },
-        // 3:   { temperature: t,  clouds: c },
-        // 4:   { temperature: t,  clouds: c },
-        // 5:   { temperature: t,  clouds: c },
-        // 6:   { temperature: t,  clouds: c },
-        // 7:   { temperature: t,  clouds: c },
-        // 8:   { temperature: t,  clouds: c },
-        // 9:   { temperature: t,  clouds: c },
-        // 10:  { temperature: t,  clouds: c },
-        // 11:  { temperature: t,  clouds: c },
-        // 12:  { temperature: t,  clouds: c },
-        // 13:  { temperature: t,  clouds: c },
-        // 14:  { temperature: t,  clouds: c },
-        // 15:  { temperature: t,  clouds: c },
-        // 16:  { temperature: t,  clouds: c },
-        // 17:  { temperature: t,  clouds: c },
-        // 18:  { temperature: t,  clouds: c },
-        // 19:  { temperature: t,  clouds: c },
-        // 20:  { temperature: t,  clouds: c },
-        // 21:  { temperature: t,  clouds: c },
-        // 22:  { temperature: t,  clouds: c },
-        // 23:  { temperature: t,  clouds: c },
+        // "-5" { temperature: t,  clouds: c, humidity: h },
+        // "-4" { temperature: t,  clouds: c, humidity: h },
+        // "-3" { temperature: t,  clouds: c, humidity: h },
+        // "-2" { temperature: t,  clouds: c, humidity: h },
+        // "-1" { temperature: t,  clouds: c, humidity: h },
+        // 0:   { temperature: t,  clouds: c, humidity: h },
+        // 1:   { temperature: t,  clouds: c, humidity: h },
+        // 2:   { temperature: t,  clouds: c, humidity: h },
+        // 3:   { temperature: t,  clouds: c, humidity: h },
+        // 4:   { temperature: t,  clouds: c, humidity: h },
+        // 5:   { temperature: t,  clouds: c, humidity: h },
+        // 6:   { temperature: t,  clouds: c, humidity: h },
+        // 7:   { temperature: t,  clouds: c, humidity: h },
+        // 8:   { temperature: t,  clouds: c, humidity: h },
+        // 9:   { temperature: t,  clouds: c, humidity: h },
+        // 10:  { temperature: t,  clouds: c, humidity: h },
+        // 11:  { temperature: t,  clouds: c, humidity: h },
+        // 12:  { temperature: t,  clouds: c, humidity: h },
+        // 13:  { temperature: t,  clouds: c, humidity: h },
+        // 14:  { temperature: t,  clouds: c, humidity: h },
+        // 15:  { temperature: t,  clouds: c, humidity: h },
+        // 16:  { temperature: t,  clouds: c, humidity: h },
+        // 17:  { temperature: t,  clouds: c, humidity: h },
+        // 18:  { temperature: t,  clouds: c, humidity: h },
+        // 19:  { temperature: t,  clouds: c, humidity: h },
+        // 20:  { temperature: t,  clouds: c, humidity: h },
+        // 21:  { temperature: t,  clouds: c, humidity: h },
+        // 22:  { temperature: t,  clouds: c, humidity: h },
+        // 23:  { temperature: t,  clouds: c, humidity: h },
     }
 
     setGradientColors(weatherData) {
