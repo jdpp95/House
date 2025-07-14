@@ -38,6 +38,11 @@ body {
 
 .window {
     background-color: rgba(0, 125, 255, 0.2);
+    color: rgba(0, 0, 0, 0);
+}
+
+.window:hover {
+    color: rgba(0, 0, 0, 1);
 }
 
 #window-1-casement {
@@ -115,6 +120,7 @@ h3, h5{
     background-color: white;
     opacity: 10%;
     z-index: 4;
+    pointer-events: none;
 }
 
 #gradient-text{
