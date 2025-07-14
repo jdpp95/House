@@ -18,9 +18,12 @@ window.onload = () => {
     document.querySelector('#sunAngle').value = weatherData.sunAngle;
     document.querySelector('#rainIntensity').value = weatherData.rainIntensity;
     document.querySelector('#visibility').value = weatherData.visibility;
+    document.querySelector("#isRainingCheckbox").checked = weatherData.isRaining;
+    document.querySelector("#hasFog").checked = weatherData.hasFog;
+    document.querySelector("#hasHeating").checked = weatherData.hasHeating;
+
     document.querySelector("#datetimepicker1").onchange = onDateChanged;
     document.querySelector("#geolocation-button").onclick = onGeoLocationButtonClicked;
-
     
     let coordsInput = document.querySelector('#coords');
     coordsInput.onchange = updateLocationData;
@@ -114,7 +117,7 @@ function onUpdateClicked() {
         rainIntensity = 0;
     }
 
-    const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility };
+    const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility, isRaining, hasHeating };
     localStorage.setItem('weatherData', JSON.stringify(weatherData));
 
     houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature2, floor: 3, hasHeating });
