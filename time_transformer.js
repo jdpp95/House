@@ -174,6 +174,7 @@ class TimeTransformer {
 
                 transformedItemChunk = this.transformWeatherItem(rawHourlyWeather, otherLocalTime1, percentage, transformedItem.angleOverflow);
             } else {
+                // Blending
                 let percentage1 = otherLocalTimeArr[0] % 1;
                 let percentage2 = otherLocalTimeArr[1] % 1;
 
@@ -195,10 +196,18 @@ class TimeTransformer {
                 continue;
             }
 
-            transformedItem.temperature = transformedItemChunk.temperature;
+            let hourlyTemperatureDiff = transformedItem.temperature - previousTemperature;
+            let earlyMorningMaxDrop = 2 - transformedItemChunk.cloudiness;
+
+            if (h < 6 && !isNaN(hourlyTemperatureDiff) && hourlyTemperatureDiff < 0) {
+                const temperatureDrop = Math.min(-hourlyTemperatureDiff, earlyMorningMaxDrop);
+                transformedItem.temperature = previousTemperature - temperatureDrop;
+            } else {
+                transformedItem.temperature = transformedItemChunk.temperature;
+            }
+
             transformedItem.clouds = transformedItemChunk.cloudiness;
 
-            let hourlyTemperatureDiff = transformedItem.temperature - previousTemperature;
 
             if (greatestDiff < hourlyTemperatureDiff) {
                 if (h <= 12) {

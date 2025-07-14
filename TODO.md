@@ -1,4 +1,3 @@
-- Soften early morning abrupt change
 - Store fog and rain checkboxes value in localstore
 - Add the posibility of costumize heating/AC per hour
 - Update insulation rules for 4th floor
