@@ -73,7 +73,7 @@ class HouseRenderer {
         const MIN_GRAYSCALE = -0.5, MAX_GRAYSCALE = -1;
         const DAYTIME_LUM_MAX = 80, DAYTIME_LUM = 50, NIGHTIME_LUM = 15;
 
-        //Set stars if nightime
+        // Set stars if nightime
         this.drawStars(sunAngle);
 
         // Color sky and clouds
@@ -112,10 +112,8 @@ class HouseRenderer {
             visibility = 1;
         }
 
-        fog.style.opacity = `${129 - 15.3 * Math.log(visibility)}%`
-        fog.style.filter = `brightness(${brightness})`;
-
-        // sky.style.backgroundColor = hsl;
+        fog.style.opacity = `${129 - 15.3 * Math.log(visibility)}%`;
+        this.setFog(sunAngle, hue);
         
         let skyGradientAngle = sunAngle >= 0? sunAngle * 2 : 0;
         
@@ -123,6 +121,22 @@ class HouseRenderer {
 
         // Set background image
         this.drawClouds(cloudiness, grayscale, hue, sunAngle);
+    }
+
+    setFog(sunAngle, temperatureHue) {
+        const MIN_FOG_BRIGHTNESS = 0.1, MAX_FOG_BRIGHTNESS = 1.45;
+        const MAX_SUN_ANGLE_FOG = 24;
+        let brightness = 0;
+
+        if (sunAngle >= MAX_SUN_ANGLE_FOG) {
+            brightness = MAX_FOG_BRIGHTNESS;
+        } else if (sunAngle <= -12) {
+            brightness = MIN_FOG_BRIGHTNESS;
+        } else {
+            brightness = this.utils.transition(MIN_FOG_BRIGHTNESS, MAX_FOG_BRIGHTNESS, -12, MAX_SUN_ANGLE_FOG, sunAngle);
+        }
+        fog.style.filter = `brightness(${brightness})`;
+        fog.style.backgroundColor = this.hslStringify({hue: temperatureHue, sat: 100, lum: 75});
     }
 
     drawClouds(cloudiness, grayscale, hue, sunAngle) {
