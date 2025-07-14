@@ -56,6 +56,7 @@ class TimeTransformer {
         let previousState, isMorning;
 
         for (let i = 0; i < 24; i++) {
+            let angleOverflow = 0;
 
             let millis = otherDate.getTime();
             millis += (i - this.otherLocation.utc) * 1000 * 60 * 60;
@@ -75,6 +76,14 @@ class TimeTransformer {
             let currentLocation = { latitude: position[0], longitude: position[1], utc: -5 };
             let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(sunAngle, currentLocation, new Date());
 
+            if (isNaN(otherLocalTime[0])) {
+                let maxSunAngle = sunAngle.toFixed(4);
+                while (isNaN(otherLocalTime[0])) {
+                    maxSunAngle -= 0.0001;
+                    otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(maxSunAngle, currentLocation, new Date());
+                }
+            }
+
             if (!itsNoonOrMidnight) { //TODO: Try with ternary operator
                 if (isMorning) {
                     otherLocalTime = otherLocalTime.slice(0, 1);
@@ -86,7 +95,8 @@ class TimeTransformer {
             let hourlySunAngleItem = {
                 time: i,
                 sunAngle,
-                otherLocalTime
+                otherLocalTime,
+                angleOverflow
             };
 
             hourlySunAngles.push(hourlySunAngleItem);
@@ -156,7 +166,7 @@ class TimeTransformer {
                     otherLocalTime1 -= 24;
                 }
 
-                transformedItemChunk = this.transformWeatherItem(rawHourlyWeather, otherLocalTime1, percentage);
+                transformedItemChunk = this.transformWeatherItem(rawHourlyWeather, otherLocalTime1, percentage, transformedItem.angleOverflow);
             } else {
                 let percentage1 = otherLocalTimeArr[0] % 1;
                 let percentage2 = otherLocalTimeArr[1] % 1;
@@ -166,8 +176,8 @@ class TimeTransformer {
                     otherLocalTimeArr[1] -= 24;
                 }
 
-                let transformedItem1 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[0], percentage1);
-                let transformedItem2 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[1], percentage2);
+                let transformedItem1 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[0], percentage1, transformedItem.angleOverflow);
+                let transformedItem2 = this.transformWeatherItem(rawHourlyWeather, otherLocalTimeArr[1], percentage2, transformedItem.angleOverflow);
 
                 transformedItemChunk = {
                     temperature: (transformedItem1.temperature + transformedItem2.temperature) / 2,
@@ -217,7 +227,7 @@ class TimeTransformer {
         return weatherJSON;
     }
 
-    transformWeatherItem(rawHourlyWeather, otherLocalTime, percentage) {
+    transformWeatherItem(rawHourlyWeather, otherLocalTime, percentage, angleOverflow) {
         let utils = new Utils();
 
         let earlierHour = Math.floor(otherLocalTime);
@@ -245,6 +255,10 @@ class TimeTransformer {
         let clouds2 = laterRawItem.clouds;
         let temperature = utils.transition(temp1, temp2, 0, 1, percentage);
         let cloudiness = utils.transition(clouds1, clouds2, 0, 1, percentage);
+
+        if (angleOverflow) {
+            temperature += angleOverflow * 0.1;
+        }
 
         let transformedItemChunk = { temperature, cloudiness };
 
