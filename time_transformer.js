@@ -199,14 +199,14 @@ class TimeTransformer {
             //Heating
             if (heatingIsOn) {
                 const HEATING_MIN = 15;
-                const HEATING_MAX = 21;
+                const HEATING_MAX = 24;
 
                 if (transformedItem.floor1 < HEATING_MIN) {
-                    transformedItem.floor1 = HEATING_MAX;
+                    transformedItem.floor1 = (HEATING_MAX + transformedItem.floor1) / 2;
                 }
 
                 if (transformedItem.floor3 < HEATING_MIN) {
-                    transformedItem.floor3 = HEATING_MAX;
+                    transformedItem.floor3 = (HEATING_MAX + transformedItem.floor3) / 2;
                 }
             }
             transformedItem.hasHeating = heatingIsOn;

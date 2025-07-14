@@ -147,8 +147,6 @@ function onTestClicked() {
     let lastIndex = gradientData.length - 1;
     let lastItem = gradientData[lastIndex];
 
-    console.log(lastItem);
-
     sunAngleElement.value = lastItem.sunAngle.toFixed(1);
     outdoorTemperatureElement.value = lastItem.temperature.toFixed(1);
     cloudCoverElement.value = (lastItem.clouds * 100).toFixed(0);
