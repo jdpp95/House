@@ -14,11 +14,6 @@ class HouseRenderer {
         const floor4 = document.querySelector('#floor-4');
 
         let heatingTemperature = temperature * 1 + (temperature - outsideTemperature);
-        let heatingEffortFahr = (heatingTemperature - temperature) * 1.8 - 10;
-
-        if(heatingEffortFahr > 0) {
-            console.log(`Diff in floor ${floor}: ${heatingEffortFahr.toFixed(0)} W`);
-        }
 
         const roomTempHSL = this.colorTemperature.colorT(temperature, 0, 0.5);
         const middleHSL = this.colorTemperature.colorT((temperature * 1 + outsideTemperature * 1) / 2, 0, 0.5);
@@ -147,7 +142,7 @@ class HouseRenderer {
         const MIN_CLOUD_BRIGHTNESS = -0.45;
         const MAX_CLOUD_BRIGHTNESS = 0;
         const MIN_CSS_BRIGHTNESS = 0.3;
-        const MAX_CSS_BRIGHTNESS = 1;
+        const MAX_CSS_BRIGHTNESS = 1 + 0.35 * (3 / 7);
 
         let cloudBrightness, cssBrightness;
         if (sunAngle >= 0) {
