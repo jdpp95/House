@@ -1,0 +1,3 @@
+- Soften early morning abrupt change
+- Add the posibility of costumize heating/AC per hour
+- Add buttons to navigate one hour backwards/forward
