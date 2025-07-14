@@ -146,12 +146,15 @@ class HouseRenderer {
         console.log(`Hue: ${hue}`);
 
         let max_css_brightness = 1 + 0.35 * (3 / 7);
-        if (hue < 60) {
+        if (hue > 45 && hue <= 60) {
             max_css_brightness = 1.35;
-        } else if (hue > 120) {
+        } else if (hue > 60 && hue < 120) {
+            max_css_brightness = this.utils.transition(1.15, 1.35, 120, 60, hue);
+        } else if (hue >= 120) {
             max_css_brightness = 1.15;
         } else {
-            max_css_brightness = this.utils.transition(1.15, 1.35, 120, 60, hue);
+            // < 45
+            max_css_brightness = this.utils.transition(1.35, 1.15, 45, 30, hue);
         }
 
         let cloudBrightness, cssBrightness;
