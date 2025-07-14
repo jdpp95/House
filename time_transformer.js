@@ -152,6 +152,8 @@ class TimeTransformer {
 
         let heatingIsOn = true;
 
+        let previousTemperature, greatestDiff = Number.NEGATIVE_INFINITY;
+
         for (let h = 0; h < transformedHourlyAngles.length; h++) {
             let transformedItem = transformedHourlyAngles[h];
             let previousTransformedItem = weatherJSON[h - 1];
@@ -195,6 +197,18 @@ class TimeTransformer {
 
             transformedItem.temperature = transformedItemChunk.temperature;
             transformedItem.clouds = transformedItemChunk.cloudiness;
+
+            let hourlyTemperatureDiff = transformedItem.temperature - previousTemperature;
+
+            if (greatestDiff < hourlyTemperatureDiff) {
+                if (h <= 12) {
+                    greatestDiff = hourlyTemperatureDiff;
+                } else {
+                    transformedItem.temperature = previousTemperature + greatestDiff;
+                }
+            }
+
+            previousTemperature = transformedItem.temperature;
 
             // Compute indoor temperature
             if (previousTransformedItem) {
