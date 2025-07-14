@@ -1,8 +1,8 @@
 class Utils {
     constructor() { }
 
-    transition(start1, end1, start2, end2, value2) {
-        let ratio = (value2 - start2) / (end2 - start2);
-        return start1 + (end1 - start1) * ratio;
+    transition(targetStart, targetEnd, originStart, originEnd, originalValue) {
+        let ratio = (originalValue - originStart) / (originEnd - originStart);
+        return targetStart + (targetEnd - targetStart) * ratio;
     }
 }
