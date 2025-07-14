@@ -225,6 +225,18 @@ class TimeTransformer {
                     transformedItem.floor3 = (HEATING_MAX + transformedItem.floor3) / 2;
                     transformedItem.hasHeating = true;
                 }
+
+                const AC_MIN = 19;
+                const AC_MAX = 22;
+                if (transformedItem.floor1 > AC_MAX) {
+                    transformedItem.floor1 = (AC_MIN + transformedItem.floor1) / 2;
+                    transformedItem.hasHeating = true;
+                }
+
+                if (transformedItem.floor3 > AC_MAX) {
+                    transformedItem.floor3 = (AC_MIN + transformedItem.floor3) / 2;
+                    transformedItem.hasHeating = true;
+                }
             }
             weatherJSON.push(transformedItem);
         }
