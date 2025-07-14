@@ -77,9 +77,13 @@ class TimeTransformer {
             let otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(sunAngle, currentLocation, new Date());
 
             if (isNaN(otherLocalTime[0])) {
-                let maxSunAngle = sunAngle.toFixed(4);
+                let maxSunAngle = Number(sunAngle.toFixed(4));
                 while (isNaN(otherLocalTime[0])) {
-                    maxSunAngle -= 0.0001;
+                    if(maxSunAngle > 0) {
+                        maxSunAngle -= 0.0001;
+                    } else {
+                        maxSunAngle += 0.0001;
+                    }
                     otherLocalTime = sunAngleCalculator.getTimeFromSunAngle(maxSunAngle, currentLocation, new Date());
                 }
             }
@@ -243,9 +247,9 @@ class TimeTransformer {
         // If the raw item is not available skip it and carry on
         if (!earlierRawItem || !laterRawItem) {
             if (!earlierRawItem) {
-                console.warn(`${earlierHour}h is needed`);
+                console.warn(`${earlierHour}h is needed for ${otherLocalTime}`);
             } else if (!laterRawItem) {
-                console.warn(`${laterHour}h is needed`);
+                console.warn(`${laterHour}h is needed for ${otherLocalTime}`);
             }
             return { temperature: undefined, cloudiness: undefined }
         }
