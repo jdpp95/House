@@ -205,6 +205,7 @@ class TimeTransformer {
                 transformedItem.floor3 = rawHourlyWeather.indoorTemp.floor3;
             }
 
+            transformedItem.hasHeating = false;
             heatingIsOn = h >= 8 && h <= 18;
             //Heating
             if (heatingIsOn) {
@@ -213,14 +214,14 @@ class TimeTransformer {
 
                 if (transformedItem.floor1 < HEATING_MIN) {
                     transformedItem.floor1 = (HEATING_MAX + transformedItem.floor1) / 2;
+                    transformedItem.hasHeating = true;
                 }
 
                 if (transformedItem.floor3 < HEATING_MIN) {
                     transformedItem.floor3 = (HEATING_MAX + transformedItem.floor3) / 2;
+                    transformedItem.hasHeating = true;
                 }
             }
-            transformedItem.hasHeating = heatingIsOn;
-
             weatherJSON.push(transformedItem);
         }
 

@@ -13,9 +13,16 @@ class HouseRenderer {
         const floor3 = document.querySelector('#floor-3');
         const floor4 = document.querySelector('#floor-4');
 
+        let heatingTemperature = temperature * 1 + (temperature - outsideTemperature);
+        let heatingEffortFahr = (heatingTemperature - temperature) * 1.8 - 10;
+
+        if(heatingEffortFahr > 0) {
+            console.log(`Diff in floor ${floor}: ${heatingEffortFahr.toFixed(0)} W`);
+        }
+
         const roomTempHSL = this.colorTemperature.colorT(temperature, 0, 0.5);
         const middleHSL = this.colorTemperature.colorT((temperature * 1 + outsideTemperature * 1) / 2, 0, 0.5);
-        const heatingTempHSL = this.colorTemperature.colorT(temperature * 1 + (temperature - outsideTemperature), 0, 0.5);
+        const heatingTempHSL = this.colorTemperature.colorT(heatingTemperature, 0, 0.5);
 
         const roomTempHslString = this.hslStringify(roomTempHSL);
         const middleHSLString = this.hslStringify(middleHSL);
