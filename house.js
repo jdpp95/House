@@ -71,9 +71,27 @@ function initializeLocationData() {
     return { coords, utc };
 }
 
+function parseUrlParams(urlParams) {
+    const paramMap = {
+        t: 'outdoorTemperature',
+        it1: 'indoorTemperature1',
+        it2: 'indoorTemperature2',
+        rh: 'humidity',
+        cc: 'cloudCover',
+        ri: 'rainIntensity',
+        sa: 'sunAngle',
+        v: 'visibility',
+    };
+    return urlParams.keys().reduce((acc, param) => {
+        const key = paramMap[param];
+        return { ...acc, [key]: urlParams.get(param) };
+    }, {});
+}
+
 window.onload = () => {
     // Initialize weather data
-    let weatherData = JSON.parse(localStorage.getItem('weatherData'));
+    const urlParams = new URLSearchParams(window.location.search);
+    let weatherData = urlParams.size > 0 ? parseUrlParams(urlParams) : JSON.parse(localStorage.getItem('weatherData'));
     this.initializeWeatherForm(weatherData);
 
     // Setup event listeners
