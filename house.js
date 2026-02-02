@@ -8,10 +8,11 @@ $(document).ready(() => {
     });
 });
 
-function initializeWeatherForm({ outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, visibility, isRaining, hasFog, hasHeating }) {
+function initializeWeatherForm({ outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, humidity, sunAngle, rainIntensity, visibility, isRaining, hasFog, hasHeating }) {
     document.querySelector('#outdoorTemperature').value = outdoorTemperature;
     document.querySelector('#indoorTemperature1').value = indoorTemperature1;
     document.querySelector('#indoorTemperature2').value = indoorTemperature2;
+    document.querySelector('#humidity').value = humidity;
     document.querySelector('#cloudCover').value = cloudCover;
     document.querySelector('#sunAngle').value = sunAngle;
     document.querySelector('#rainIntensity').value = rainIntensity;
