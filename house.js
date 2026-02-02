@@ -156,7 +156,7 @@ function onUpdateClicked() {
 
     // TODO: Get humidity from somewhere
 
-    const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility, isRaining, hasHeating };
+    const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility, isRaining, hasHeating, humidity };
     localStorage.setItem('weatherData', JSON.stringify(weatherData));
 
     houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature2, floor: 3, hasHeating });
@@ -170,7 +170,7 @@ function onUpdateClicked() {
     document.getElementById("window-3").innerHTML = (indoorTemperature2 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
     document.getElementById("window-4").innerHTML = (indoorTemperature1 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
 
-    houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility });
+    houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility, humidity: humidity / 100 });
 }
 
 function onGradientDataClicked() {
