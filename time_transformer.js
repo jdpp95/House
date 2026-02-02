@@ -79,7 +79,7 @@ class TimeTransformer {
             if (isNaN(otherLocalTime[0])) {
                 let maxSunAngle = Number(sunAngle.toFixed(4));
                 while (isNaN(otherLocalTime[0])) {
-                    if(maxSunAngle > 0) {
+                    if (maxSunAngle > 0) {
                         maxSunAngle -= 0.0001;
                     } else {
                         maxSunAngle += 0.0001;
@@ -149,8 +149,6 @@ class TimeTransformer {
     transformWeatherJSON(rawHourlyWeather) {
         let transformedHourlyAngles = this.computeHourlySunAngles();
         let weatherJSON = [];
-
-        let heatingIsOn = true;
 
         let previousTemperature, greatestDiff = Number.NEGATIVE_INFINITY;
 
@@ -234,11 +232,20 @@ class TimeTransformer {
             }
 
             transformedItem.hasHeating = false;
-            heatingIsOn = h >= 8 && h <= 18;
-            //Heating
+
+            const thermostatConfig = {
+                9: {
+                    floor1: {
+                        temperature: 21,
+                    },
+                    floor3: {
+                        temperature: 20,
+                    }
+                }
+            };
+
+            // Heating
             if (heatingIsOn) {
-                const HEATING_MIN = 15;
-                const HEATING_MAX = 24;
 
                 if (transformedItem.floor1 < HEATING_MIN) {
                     transformedItem.floor1 = (HEATING_MAX + transformedItem.floor1) / 2;
@@ -249,9 +256,6 @@ class TimeTransformer {
                     transformedItem.floor3 = (HEATING_MAX + transformedItem.floor3) / 2;
                     transformedItem.hasHeating = true;
                 }
-
-                const AC_MIN = 15;
-                const AC_MAX = 22;
                 if (transformedItem.floor1 > AC_MAX) {
                     transformedItem.floor1 = (AC_MIN + transformedItem.floor1) / 2;
                     transformedItem.hasHeating = true;
@@ -302,5 +306,34 @@ class TimeTransformer {
         const transformedItemChunk = { temperature, cloudiness, humidity };
 
         return transformedItemChunk;
+    }
+
+    applyThermostat(transformedItem, heatingConfig, floor, hour) {
+        const HEATING_MIN = 15;
+        const HEATING_MAX = 24;
+        const AC_MIN = 15;
+        const AC_MAX = 22;
+
+        const floorThermostatConfig = heatingConfig[hour]?.[floor];
+        const thermostatEnabled = !!floorThermostatConfig;
+        const manualThermostatTemperature = floorThermostatConfig?.temperature;
+        const auto = isNaN(manualThermostatTemperature);
+
+        if (thermostatEnabled) {
+            transformedItem.hasHeating = true;
+
+            if (auto) {
+                if (transformedItem[floor] < HEATING_MIN) {
+                    // Heat
+                    transformedItem[floor] = (HEATING_MAX + transformedItem[floor]) / 2;
+                } else if (transformedItem[floor] > AC_MAX) {
+                    // Cool
+                    transformedItem[floor] = (AC_MIN + transformedItem[floor]) / 2;
+                }
+            } else {
+                // Manual heating
+                transformedItem[floor] = manualThermostatTemperature;
+            }
+        }
     }
 }
