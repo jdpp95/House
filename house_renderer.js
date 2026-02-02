@@ -80,7 +80,7 @@ class HouseRenderer {
 
         let upperLuminosity = Math.min(Math.max(this.utils.transition(NIGHTIME_LUM, DAYTIME_LUM, -10, 0, sunAngle), NIGHTIME_LUM), DAYTIME_LUM);
         let lowerLuminosity = Math.min(Math.max(this.utils.transition(NIGHTIME_LUM, DAYTIME_LUM_MAX, -12, 0, sunAngle), NIGHTIME_LUM), DAYTIME_LUM_MAX);
-        
+
         // TODO: Saturation on low sun angles
 
         const upperHsl = `hsl(${hue}, ${sat}%, ${upperLuminosity}%)`;
@@ -94,22 +94,15 @@ class HouseRenderer {
             grayscale = MIN_GRAYSCALE;
         }
 
-        // Set fog
         if (!hasFog) {
             visibility = 5000;
-        } else if (visibility == 0) {
-            visibility = 1;
-        } else {
-            visibility = this.computeVisibility(humidity, cloudiness);
         }
-
-        document.querySelector('#visibility').value = visibility.toFixed(0);
-
+        
         fog.style.opacity = `${129 - 15.3 * Math.log(visibility)}%`;
         this.setFog(sunAngle, hue);
-        
-        let skyGradientAngle = sunAngle >= 0? sunAngle * 2 : 0;
-        
+
+        let skyGradientAngle = sunAngle >= 0 ? sunAngle * 2 : 0;
+
         sky.style.background = `linear-gradient(-${skyGradientAngle}deg, ${lowerHsl} 0%, ${upperHsl} 50%)`;
 
         // Set background image
@@ -129,7 +122,7 @@ class HouseRenderer {
             brightness = this.utils.transition(MIN_FOG_BRIGHTNESS, MAX_FOG_BRIGHTNESS, -12, MAX_SUN_ANGLE_FOG, sunAngle);
         }
         fog.style.filter = `brightness(${brightness})`;
-        fog.style.backgroundColor = this.hslStringify({hue: temperatureHue, sat: 100, lum: 75});
+        fog.style.backgroundColor = this.hslStringify({ hue: temperatureHue, sat: 100, lum: 75 });
     }
 
     drawClouds(cloudiness, grayscale, hue, sunAngle) {
@@ -248,16 +241,5 @@ class HouseRenderer {
         }
 
         return closestPercentage;
-    }
-
-    computeVisibility(humidity, cloudiness) {
-        let humidityFactor = 12 - humidity * 10;
-
-        if(cloudiness > 0.9) {
-            const cloudinessFactor = cloudiness *10 - 9;
-            humidityFactor -= cloudinessFactor;
-        }
-
-        return Math.min(10 ** humidityFactor, 5000);
     }
 }

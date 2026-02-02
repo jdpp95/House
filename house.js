@@ -17,7 +17,7 @@ function initializeWeatherForm({ outdoorTemperature, indoorTemperature1, indoorT
     document.querySelector('#sunAngle').value = sunAngle;
     document.querySelector('#rainIntensity').value = rainIntensity;
     document.querySelector('#visibility').value = visibility;
-    setVisibilityVisibility({ isVisibilityVisible: hasFog})
+    setVisibilityVisibility({ isVisibilityVisible: hasFog })
     document.querySelector("#isRainingCheckbox").checked = isRaining;
     document.querySelector("#hasFog").checked = hasFog;
     document.querySelector("#hasHeating").checked = hasHeating;
@@ -221,6 +221,17 @@ function onGradientDataClicked() {
 
     indoorTemperature1Element.value = lastItem.floor1.toFixed(1);
     indoorTemperature2Element.value = lastItem.floor3.toFixed(1);
+
+    const hasFog = hasFogElement.value;
+    if (!hasFog) {
+        visibility = 5000;
+    } else if (visibility === 0) {
+        visibility = 1;
+    } else {
+        visibility = new Utils().computeVisibility(lastItem.humidity, lastItem.clouds);
+    }
+
+    document.querySelector('#visibility').value = visibility.toFixed(0);
 }
 
 function onGeoLocationButtonClicked() {
