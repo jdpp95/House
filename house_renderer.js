@@ -255,7 +255,7 @@ class HouseRenderer {
 
         if(cloudiness > 0.9) {
             const cloudinessFactor = cloudiness *10 - 9;
-            return humidityFactor - cloudinessFactor;
+            humidityFactor -= cloudinessFactor;
         }
 
         return Math.min(10 ** humidityFactor, 5000);
