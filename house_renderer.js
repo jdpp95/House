@@ -99,6 +99,8 @@ class HouseRenderer {
             visibility = 5000;
         } else if (visibility == 0) {
             visibility = 1;
+        } else {
+            visibility = this.computeVisibility(humidity, cloudiness);
         }
 
         fog.style.opacity = `${129 - 15.3 * Math.log(visibility)}%`;
@@ -246,10 +248,14 @@ class HouseRenderer {
         return closestPercentage;
     }
 
-    computeVisibility(humidity, temperature) {
-        const tempInF = this.utils.cToF(temperature);
-        humidity = humidity / 100;
+    computeVisibility(humidity, cloudiness) {
+        let humidityFactor = 12 - humidity * 10;
 
-        return 10000;
+        if(cloudiness > 0.9) {
+            const cloudinessFactor = cloudiness *10 - 9;
+            return humidityFactor - cloudinessFactor;
+        }
+
+        return Math.min(10 ** humidityFactor, 5000);
     }
 }
