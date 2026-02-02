@@ -228,7 +228,7 @@ function onGradientDataClicked() {
     } else if (visibility === 0) {
         visibility = 1;
     } else {
-        visibility = new Utils().computeVisibility(lastItem.humidity, lastItem.clouds);
+        visibility = new Utils().computeVisibility(lastItem.humidity, lastItem.cloudiness);
     }
 
     document.querySelector('#visibility').value = visibility.toFixed(0);
