@@ -17,6 +17,7 @@ function initializeWeatherForm({ outdoorTemperature, indoorTemperature1, indoorT
     document.querySelector('#sunAngle').value = sunAngle;
     document.querySelector('#rainIntensity').value = rainIntensity;
     document.querySelector('#visibility').value = visibility;
+    setVisibilityVisibility({ isVisibilityVisible: hasFog})
     document.querySelector("#isRainingCheckbox").checked = isRaining;
     document.querySelector("#hasFog").checked = hasFog;
     document.querySelector("#hasHeating").checked = hasHeating;
@@ -56,9 +57,14 @@ function setupRainControls() {
 function setupFogControls() {
     let hasFogCheckbox = document.querySelector("#hasFog");
     hasFogCheckbox.addEventListener('change', e => {
-        let visibilityInputGroup = document.querySelector('#visibilityInputGroup');
-        visibilityInputGroup.style.display = e.target.checked ? 'flex' : 'none';
+        setVisibilityVisibility({ isVisibilityVisible: e.target.checked });
     });
+}
+
+// Sets the visibility input group visibility based on whether fog is enabled
+function setVisibilityVisibility({ isVisibilityVisible }) {
+    let visibilityInputGroup = document.querySelector('#visibilityInputGroup');
+    visibilityInputGroup.style.display = isVisibilityVisible ? 'flex' : 'none';
 }
 
 function initializeLocationData() {
