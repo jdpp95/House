@@ -103,6 +103,8 @@ class HouseRenderer {
             visibility = this.computeVisibility(humidity, cloudiness);
         }
 
+        document.querySelector('#visibility').value = visibility.toFixed(0);
+
         fog.style.opacity = `${129 - 15.3 * Math.log(visibility)}%`;
         this.setFog(sunAngle, hue);
         
