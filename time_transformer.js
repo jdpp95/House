@@ -245,26 +245,20 @@ class TimeTransformer {
             };
 
             // Heating
-            if (heatingIsOn) {
+            this.applyThermostat(transformedItem, thermostatConfig, 'floor1', h);
+            this.applyThermostat(transformedItem, thermostatConfig, 'floor3', h);
 
-                if (transformedItem.floor1 < HEATING_MIN) {
-                    transformedItem.floor1 = (HEATING_MAX + transformedItem.floor1) / 2;
-                    transformedItem.hasHeating = true;
-                }
+            const AC_MIN = 15;
+            const AC_MAX = 22;
 
-                if (transformedItem.floor3 < HEATING_MIN) {
-                    transformedItem.floor3 = (HEATING_MAX + transformedItem.floor3) / 2;
-                    transformedItem.hasHeating = true;
-                }
-                if (transformedItem.floor1 > AC_MAX) {
-                    transformedItem.floor1 = (AC_MIN + transformedItem.floor1) / 2;
-                    transformedItem.hasHeating = true;
-                }
+            if (transformedItem.floor1 > AC_MAX) {
+                transformedItem.floor1 = (AC_MIN + transformedItem.floor1) / 2;
+                transformedItem.hasHeating = true;
+            }
 
-                if (transformedItem.floor3 > AC_MAX) {
-                    transformedItem.floor3 = (AC_MIN + transformedItem.floor3) / 2;
-                    transformedItem.hasHeating = true;
-                }
+            if (transformedItem.floor3 > AC_MAX) {
+                transformedItem.floor3 = (AC_MIN + transformedItem.floor3) / 2;
+                transformedItem.hasHeating = true;
             }
             weatherJSON.push(transformedItem);
         }
