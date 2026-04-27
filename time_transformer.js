@@ -146,7 +146,7 @@ class TimeTransformer {
         }
     }
 
-    transformWeatherJSON(rawHourlyWeather) {
+    transformWeatherJSON(rawHourlyWeather, thermostatConfig) {
         let transformedHourlyAngles = this.computeHourlySunAngles();
         let weatherJSON = [];
 
@@ -232,17 +232,6 @@ class TimeTransformer {
             }
 
             transformedItem.hasHeating = false;
-
-            const thermostatConfig = {
-                9: {
-                    floor1: {
-                        temperature: 21,
-                    },
-                    floor3: {
-                        temperature: 20,
-                    }
-                }
-            };
 
             // Heating
             this.applyThermostat(transformedItem, thermostatConfig, 'floor1', h);

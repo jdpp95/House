@@ -19,7 +19,15 @@ class Gradient {
             // 23: {   temperature: -, clouds: c },
         };
 
-        let transformedHourlyWeather = timeTransformer.transformWeatherJSON(rawHourlyWeather);
+        const thermostatConfig = {
+            floor1: {
+                temperature: 18
+            },
+            floor3: {
+                temperature: 20
+            }
+        }
+        let transformedHourlyWeather = timeTransformer.transformWeatherJSON(rawHourlyWeather, thermostatConfig);
         console.table(transformedHourlyWeather);
 
         this.setGradientColors(transformedHourlyWeather);
