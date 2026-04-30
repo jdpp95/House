@@ -226,9 +226,11 @@ class TimeTransformer {
 
                 transformedItem.floor1 = computeIndoorTempDelta(transformedItem.temperature, previousTransformedItem.floor1, 0.07, 0.45); //1st floor
                 transformedItem.floor3 = computeIndoorTempDelta(transformedItem.temperature, previousTransformedItem.floor3, 0.015, 0.15); //3rd floor
+                transformedItem.floor4 = computeIndoorTempDelta(transformedItem.temperature, previousTransformedItem.floor4, 0.015, 0.45); //4th floor
             } else {
                 transformedItem.floor1 = rawHourlyWeather.indoorTemp.floor1;
                 transformedItem.floor3 = rawHourlyWeather.indoorTemp.floor3;
+                transformedItem.floor4 = rawHourlyWeather.indoorTemp.floor4;
             }
 
             transformedItem.hasHeating = false;
@@ -236,7 +238,8 @@ class TimeTransformer {
             // Heating
             this.applyThermostat(transformedItem, thermostatConfig, 'floor1', h);
             this.applyThermostat(transformedItem, thermostatConfig, 'floor3', h);
-
+            this.applyThermostat(transformedItem, thermostatConfig, 'floor4', h);
+            
             const AC_MIN = 15;
             const AC_MAX = 22;
 

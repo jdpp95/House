@@ -27,16 +27,11 @@ class HouseRenderer {
 
         switch (floor) {
             case 1:
-            case 4:
                 if (hasHeating) {
                     floor1.style.background = backgroundString;
-                    floor4.style.background = backgroundString;
                 } else {
                     floor1.style.background = "";
-                    floor4.style.background = "";
-
                     floor1.style.backgroundColor = roomTempHslString;
-                    floor4.style.backgroundColor = roomTempHslString;
                 }
                 break;
             case 2:
@@ -50,6 +45,14 @@ class HouseRenderer {
 
                     floor2.style.backgroundColor = roomTempHslString;
                     floor3.style.backgroundColor = roomTempHslString;
+                }
+                break;
+            case 4:
+                if (hasHeating) {
+                    floor4.style.background = backgroundString;
+                } else {
+                    floor4.style.background = "";
+                    floor4.style.backgroundColor = roomTempHslString;
                 }
                 break;
         }
@@ -97,7 +100,7 @@ class HouseRenderer {
         if (!hasFog) {
             visibility = 5000;
         }
-        
+
         fog.style.opacity = `${129 - 15.3 * Math.log(visibility)}%`;
         this.setFog(sunAngle, hue);
 

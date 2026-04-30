@@ -8,10 +8,24 @@ $(document).ready(() => {
     });
 });
 
-function initializeWeatherForm({ outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, humidity, sunAngle, rainIntensity, visibility, isRaining, hasFog, hasHeating }) {
+function initializeWeatherForm({ 
+    outdoorTemperature, 
+    indoorTemperature1, 
+    indoorTemperature2, 
+    indoorTemperature4,
+    cloudCover, 
+    humidity, 
+    sunAngle, 
+    rainIntensity, 
+    visibility, 
+    isRaining, 
+    hasFog, 
+    hasHeating 
+}) {
     document.querySelector('#outdoorTemperature').value = outdoorTemperature;
     document.querySelector('#indoorTemperature1').value = indoorTemperature1;
     document.querySelector('#indoorTemperature2').value = indoorTemperature2;
+    document.querySelector('#indoorTemperature4').value = indoorTemperature4;
     document.querySelector('#humidity').value = humidity;
     document.querySelector('#cloudCover').value = cloudCover;
     document.querySelector('#sunAngle').value = sunAngle;
@@ -83,6 +97,7 @@ function parseUrlParams(urlParams) {
         t: 'outdoorTemperature',
         it1: 'indoorTemperature1',
         it2: 'indoorTemperature2',
+        it4: 'indoorTemperature4',
         rh: 'humidity',
         cc: 'cloudCover',
         ri: 'rainIntensity',
@@ -146,6 +161,7 @@ function onUpdateClicked() {
     const outdoorTemperature = document.querySelector('#outdoorTemperature').value;
     const indoorTemperature1 = document.querySelector('#indoorTemperature1').value;
     const indoorTemperature2 = document.querySelector('#indoorTemperature2').value;
+    const indoorTemperature4 = document.querySelector('#indoorTemperature4').value;
     const sunAngle = document.querySelector('#sunAngle').value;
     const humidity = document.querySelector('#humidity').value;
     let cloudCover = document.querySelector('#cloudCover').value;
@@ -161,11 +177,25 @@ function onUpdateClicked() {
         rainIntensity = 0;
     }
 
-    const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility, isRaining, hasHeating, humidity };
+    const weatherData = { 
+        outdoorTemperature, 
+        indoorTemperature1, 
+        indoorTemperature2, 
+        indoorTemperature4, 
+        cloudCover, 
+        sunAngle, 
+        rainIntensity, 
+        hasFog, 
+        visibility, 
+        isRaining, 
+        hasHeating, 
+        humidity 
+    };
     localStorage.setItem('weatherData', JSON.stringify(weatherData));
 
-    houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature2, floor: 3, hasHeating });
     houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature1, floor: 1, hasHeating });
+    houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature2, floor: 3, hasHeating });
+    houseRenderer.colorHouse({ outsideTemperature: outdoorTemperature, temperature: indoorTemperature4, floor: 4, hasHeating });
 
     const THERMOMETHER_DIFF = 1.5;
 
@@ -173,7 +203,7 @@ function onUpdateClicked() {
     document.getElementById("window-1-casement").innerHTML = (indoorTemperature1 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
     document.getElementById("window-2").innerHTML = (indoorTemperature2 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
     document.getElementById("window-3").innerHTML = (indoorTemperature2 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
-    document.getElementById("window-4").innerHTML = (indoorTemperature1 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
+    document.getElementById("window-4").innerHTML = (indoorTemperature4 * 1 + THERMOMETHER_DIFF).toFixed(1) + "°C";
 
     houseRenderer.colorSky({ temperature: outdoorTemperature, sunAngle, cloudiness: cloudCover / 100, rainIntensity, hasFog, visibility, humidity: humidity / 100 });
 }
@@ -182,6 +212,7 @@ function onGradientDataClicked() {
     const outdoorTemperatureElement = document.querySelector("#outdoorTemperature");
     const indoorTemperature1Element = document.querySelector("#indoorTemperature1");
     const indoorTemperature2Element = document.querySelector("#indoorTemperature2");
+    const indoorTemperature4Element = document.querySelector("#indoorTemperature4");
     const humidityElement = document.querySelector("#humidity");
     const sunAngleElement = document.querySelector("#sunAngle");
     const cloudCoverElement = document.querySelector("#cloudCover");
@@ -219,7 +250,8 @@ function onGradientDataClicked() {
 
     indoorTemperature1Element.value = lastItem.floor1.toFixed(1);
     indoorTemperature2Element.value = lastItem.floor3.toFixed(1);
-
+    indoorTemperature4Element.value = lastItem.floor4.toFixed(1);
+    
     const hasFog = hasFogElement.value;
     if (!hasFog) {
         visibility = 5000;
