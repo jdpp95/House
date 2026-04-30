@@ -1,4 +1,3 @@
-- Bug: Fog is too "Yellow" at temperatures between 10-13 °C and very low visibility values
 - Update insulation rules for 4th floor
 - Add buttons to navigate one hour backwards/forward
 - Add the ability to turn on/off the lights

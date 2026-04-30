@@ -161,8 +161,6 @@ function onUpdateClicked() {
         rainIntensity = 0;
     }
 
-    // TODO: Get humidity from somewhere
-
     const weatherData = { outdoorTemperature, indoorTemperature1, indoorTemperature2, cloudCover, sunAngle, rainIntensity, hasFog, visibility, isRaining, hasHeating, humidity };
     localStorage.setItem('weatherData', JSON.stringify(weatherData));
 

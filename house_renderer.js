@@ -115,11 +115,11 @@ class HouseRenderer {
         let brightness = 0;
 
         if (sunAngle >= MAX_SUN_ANGLE_FOG) {
-            brightness = MAX_FOG_BRIGHTNESS;
+            brightness = 1;
         } else if (sunAngle <= -12) {
             brightness = MIN_FOG_BRIGHTNESS;
         } else {
-            brightness = this.utils.transition(MIN_FOG_BRIGHTNESS, MAX_FOG_BRIGHTNESS, -12, MAX_SUN_ANGLE_FOG, sunAngle);
+            brightness = this.utils.transition(MIN_FOG_BRIGHTNESS, Math.min(MAX_FOG_BRIGHTNESS, 1), -12, MAX_SUN_ANGLE_FOG, sunAngle);
         }
         fog.style.filter = `brightness(${brightness})`;
         fog.style.backgroundColor = this.hslStringify({ hue: temperatureHue, sat: 100, lum: 75 });
